@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#1C1917">
+<title>湾区字游 · 一字一城</title>
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap">
+<style>
+  :root{
+    --bg:#1C1917;
+    --bg-soft:#24201D;
+    --paper:#F0E9DA;
+    --paper-dim:rgba(240,233,218,.62);
+    --accent:#E28466;
+    --seal:#B5462E;
+    --seal-ink:#F5EEE0;
+    --line:rgba(240,233,218,.14);
+    --line-strong:rgba(240,233,218,.30);
+    --gold:rgba(226,201,158,.55);
+    --font-display:"Ma Shan Zheng","KaiTi","STKaiti","Noto Serif SC","SimSun",serif;
+    --font-body:"Noto Serif SC","Songti SC","SimSun",serif;
+    --font-ui:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+    --safe-top:env(safe-area-inset-top,0px);
+    --safe-bottom:env(safe-area-inset-bottom,0px);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    background:var(--bg);
+    color:var(--paper);
+    font-family:var(--font-ui);
+    font-weight:400;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  #app{
+    max-width:520px;
+    margin:0 auto;
+    min-height:100vh;
+    position:relative;
+    background:
+      radial-gradient(120% 60% at 50% 0%, rgba(226,132,102,.06), transparent 60%),
+      linear-gradient(180deg, #1E1A17 0%, var(--bg) 55%, #171412 100%);
+  }
+  /* 印章纹背景 */
+  #app::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    opacity:.5;
+    background-image:
+      radial-gradient(rgba(240,233,218,.055) 1px, transparent 1.4px);
+    background-size:26px 26px;
+    z-index:0;
+  }
+  .view{
+    position:relative;
+    z-index:1;
+    min-height:100vh;
+    display:none;
+    flex-direction:column;
+    padding:calc(20px + var(--safe-top)) 20px calc(28px + var(--safe-bottom));
+  }
+  .view.active{display:flex;animation:viewIn .5s ease both}
+  @keyframes viewIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion: reduce){
+    .view.active{animation:none}
+    *{animation-duration:.01ms !important;transition-duration:.01ms !important}
+  }
+  h1,h2,h3{font-weight:400}
+  .serif{font-family:var(--font-body)}
+  .display{font-family:var(--font-display);font-weight:400}
+  .ui{font-family:var(--font-ui)}
+  button{font-family:var(--font-ui);border:0;cursor:pointer;color:inherit;background:none}
+  button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  /* ===== 顶部栏 ===== */
+  .topbar{
+    display:flex;align-items:center;gap:12px;
+    padding-bottom:14px;margin-bottom:6px;
+    border-bottom:1px solid var(--line);
+  }
+  .topbar .back{
+    width:44px;height:44px;display:flex;align-items:center;justify-content:center;
+    border:1px solid var(--line-strong);border-radius:8px;flex:0 0 auto;
+  }
+  .topbar .t-title{font-size:19px;letter-spacing:.12em}
+  .topbar .t-tag{
+    margin-left:auto;font-size:11px;letter-spacing:.28em;color:var(--accent);
+    border:1px solid rgba(226,132,102,.4);padding:5px 10px;border-radius:4px;
+  }
+  .seal-tiny{
+    width:34px;height:34px;flex:0 0 auto;background:var(--seal);color:var(--seal-ink);
+    border-radius:4px;display:flex;align-items:center;justify-content:center;
+    font-family:var(--font-display);font-size:15px;
+    box-shadow:inset 0 0 0 2px rgba(0,0,0,.12);
+  }
+
+  /* ===== 封面 ===== */
+  #view-cover{justify-content:center;text-align:center;padding-top:0;padding-bottom:0}
+  .cover-hero{
+    position:absolute;inset:0;z-index:0;
+    background-size:cover;background-position:center 30%;
+  }
+  .cover-hero::after{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(180deg, rgba(28,25,23,.30) 0%, rgba(28,25,23,.55) 55%, #1C1917 96%);
+  }
+  .cover-body{position:relative;z-index:1;margin-top:auto;padding:64px 8px 52px}
+  .cover-kicker{
+    font-size:12px;letter-spacing:.5em;color:var(--accent);margin-bottom:20px;
+    display:flex;align-items:center;justify-content:center;gap:14px;
+  }
+  .cover-kicker::before,.cover-kicker::after{content:"";width:34px;height:1px;background:rgba(226,132,102,.5)}
+  .cover-title{
+    font-size:88px;line-height:1.05;letter-spacing:.14em;color:var(--paper);
+    text-shadow:0 4px 30px rgba(0,0,0,.5);
+  }
+  .cover-sub{margin-top:18px;font-size:15px;letter-spacing:.42em;color:var(--paper-dim)}
+  .cover-note{margin-top:34px;font-size:12px;letter-spacing:.3em;color:rgba(240,233,218,.45)}
+  .btn-primary{
+    display:inline-flex;align-items:center;justify-content:center;gap:10px;
+    min-height:54px;padding:0 34px;margin-top:26px;
+    background:var(--seal);color:var(--seal-ink);
+    font-size:17px;letter-spacing:.3em;border-radius:6px;
+    box-shadow:0 10px 30px rgba(181,70,46,.35);
+  }
+  .btn-primary:active{transform:translateY(2px)}
+  .cover-seal{
+    position:absolute;right:26px;bottom:30px;z-index:1;
+    width:56px;height:56px;background:var(--seal);color:var(--seal-ink);
+    border-radius:5px;display:flex;align-items:center;justify-content:center;
+    font-family:var(--font-display);font-size:24px;
+    box-shadow:inset 0 0 0 2px rgba(0,0,0,.15), 0 8px 24px rgba(0,0,0,.4);
+  }
+  .cover-count{
+    position:absolute;left:26px;bottom:40px;z-index:1;text-align:left;
+    font-size:11px;letter-spacing:.22em;color:rgba(240,233,218,.6);line-height:1.9;
+  }
+  .cover-count b{font-family:var(--font-display);font-size:22px;color:var(--paper);font-weight:400;margin-right:4px}
+
+  /* ===== 选城 ===== */
+  .city-head{margin:10px 2px 20px}
+  .city-head h2{font-size:30px;letter-spacing:.1em;color:var(--paper)}
+  .city-head .en{font-size:11px;letter-spacing:.34em;color:rgba(240,233,218,.4);margin-top:6px}
+  .progress{
+    display:flex;align-items:center;gap:12px;margin:18px 0 22px;
+    font-size:12px;letter-spacing:.14em;color:var(--paper-dim);
+  }
+  .progress .bar{flex:1;height:6px;background:rgba(240,233,218,.1);border-radius:3px;overflow:hidden}
+  .progress .fill{height:100%;width:0;background:linear-gradient(90deg,var(--seal),var(--accent));border-radius:3px;transition:width .5s ease}
+  .city-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .city-card{
+    position:relative;padding:16px 8px 14px;text-align:center;
+    border:1px solid var(--line);border-radius:10px;background:rgba(240,233,218,.03);
+    min-height:118px;display:flex;flex-direction:column;align-items:center;gap:2px;
+  }
+  .city-card:active{background:rgba(240,233,218,.07)}
+  .city-card .ch{font-family:var(--font-display);font-size:46px;line-height:1.2;color:var(--paper)}
+  .city-card .nm{font-size:13px;letter-spacing:.18em;color:var(--paper-dim);margin-top:6px}
+  .city-card .tag{
+    position:absolute;top:10px;right:10px;font-size:10px;letter-spacing:.08em;
+    color:rgba(240,233,218,.35);border:1px solid var(--line);border-radius:3px;padding:2px 6px;
+  }
+  .city-card.done{border-color:rgba(226,132,102,.55);background:rgba(226,132,102,.06)}
+  .city-card.done .tag{
+    background:var(--seal);color:var(--seal-ink);border-color:var(--seal);
+    font-family:var(--font-display);font-size:13px;padding:0 6px;
+  }
+  .city-card.locked{opacity:.38}
+  .city-card .need{
+    margin-top:auto;padding-top:6px;font-size:10px;color:rgba(240,233,218,.4);letter-spacing:.12em;
+  }
+  .city-foot{
+    margin-top:26px;text-align:center;font-size:11px;letter-spacing:.2em;color:rgba(240,233,218,.4);
+  }
+
+  /* ===== 拆字关卡 ===== */
+  .level-wrap{flex:1;display:flex;flex-direction:column}
+  .level-head{display:flex;align-items:flex-end;gap:14px;margin:8px 2px 4px}
+  .level-head .city-name{font-size:26px;letter-spacing:.16em}
+  .level-head .level-en{font-size:10px;letter-spacing:.3em;color:rgba(240,233,218,.42);padding-bottom:6px}
+  .score-chip{
+    margin-left:auto;font-size:12px;color:var(--accent);letter-spacing:.1em;
+    border:1px solid rgba(226,132,102,.4);padding:6px 12px;border-radius:30px;
+    display:flex;align-items:center;gap:6px;
+  }
+  .hint-line{
+    margin:14px 2px 18px;font-size:13px;letter-spacing:.16em;color:var(--paper-dim);
+    display:flex;align-items:center;gap:10px;
+  }
+  .hint-line svg{flex:0 0 auto}
+  .build-grid{
+    position:relative;aspect-ratio:1/1;width:100%;
+    border:1px solid var(--line-strong);border-radius:12px;
+    background:radial-gradient(80% 80% at 50% 40%, rgba(240,233,218,.045), transparent 70%);
+    touch-action:none;user-select:none;-webkit-user-select:none;
+  }
+  .ghost-char{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-family:var(--font-display);font-size:min(46vw,230px);line-height:1;
+    color:rgba(240,233,218,.30);pointer-events:none;letter-spacing:.04em;
+  }
+  .slot-row{
+    position:absolute;inset:10%;display:flex;align-items:stretch;gap:8px;
+  }
+  .slot{
+    flex:1;border:1.5px dashed rgba(226,132,102,.5);border-radius:10px;
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--font-display);font-size:min(30vw,150px);color:var(--paper);
+    background:rgba(226,132,102,.05);transition:all .25s ease;
+    min-height:80px;
+  }
+  .slot.filled{border-style:solid;border-color:rgba(226,132,102,.75);background:rgba(226,132,102,.10)}
+  .slot.hovering{border-color:var(--accent);background:rgba(226,132,102,.16);transform:scale(1.02)}
+  .slot.mismatch{animation:shake .4s ease}
+  @keyframes shake{0%,100%{transform:none}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .parts-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:14px;margin-top:22px}
+  .part-btn{
+    min-height:72px;border:1px solid var(--line-strong);border-radius:10px;
+    background:rgba(240,233,218,.05);font-family:var(--font-display);
+    font-size:40px;color:var(--paper);transition:all .2s ease;
+    touch-action:none;-webkit-user-select:none;user-select:none;
+  }
+  .part-btn:active{background:rgba(240,233,218,.12)}
+  .part-btn.selected{border-color:var(--accent);background:rgba(226,132,102,.16);box-shadow:0 0 0 3px rgba(226,132,102,.2)}
+  .part-btn.used{opacity:.22;pointer-events:none;border-style:dashed}
+  .part-drag{
+    position:fixed;z-index:50;pointer-events:none;touch-action:none;
+    font-family:var(--font-display);font-size:44px;color:var(--paper);
+    display:flex;align-items:center;justify-content:center;
+    width:88px;height:88px;border:1px solid var(--accent);border-radius:10px;
+    background:rgba(226,132,102,.22);transform:translate(-50%,-50%);
+  }
+  .level-actions{display:flex;gap:12px;margin-top:24px}
+  .level-actions .btn-ghost{
+    flex:1;min-height:50px;border:1px solid var(--line-strong);border-radius:6px;
+    font-size:14px;letter-spacing:.22em;color:var(--paper-dim);
+  }
+  .level-actions .btn-go{
+    flex:2;min-height:50px;background:var(--seal);color:var(--seal-ink);border-radius:6px;
+    font-size:15px;letter-spacing:.26em;
+  }
+  .level-actions .btn-go:disabled{opacity:.35;pointer-events:none}
+  .win-stamp{
+    position:absolute;inset:0;display:none;align-items:center;justify-content:center;
+    z-index:5;pointer-events:none;
+  }
+  .win-stamp.show{display:flex}
+  .stamp-anim{
+    width:120px;height:120px;background:var(--seal);color:var(--seal-ink);border-radius:8px;
+    display:flex;align-items:center;justify-content:center;flex-direction:column;
+    font-family:var(--font-display);font-size:40px;
+    box-shadow:0 0 0 3px rgba(240,233,218,.25), 0 16px 40px rgba(0,0,0,.5);
+    animation:stampIn .55s cubic-bezier(.2,1.6,.3,1) both;
+    padding-top:6px;
+  }
+  .stamp-anim .sm{font-family:var(--font-ui);font-size:10px;letter-spacing:.3em;color:rgba(245,238,224,.85)}
+  @keyframes stampIn{0%{transform:scale(2.6) rotate(-8deg);opacity:0}60%{transform:scale(.92) rotate(2deg);opacity:1}100%{transform:scale(1) rotate(-3deg)}}
+
+  /* ===== 解字卡 ===== */
+  .detail-hero{text-align:center;margin:14px 0 6px}
+  .detail-hero .big-char{font-family:var(--font-display);font-size:min(42vw,220px);line-height:1.15;color:var(--paper)}
+  .detail-hero .d-city{font-size:16px;letter-spacing:.4em;color:var(--accent);margin-top:2px}
+  .detail-hero .d-src{font-size:13px;letter-spacing:.2em;color:var(--paper-dim);margin-top:10px}
+  .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:22px}
+  .d-card{border:1px solid var(--line);border-radius:10px;padding:16px 14px;background:rgba(240,233,218,.03)}
+  .d-card .ic{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  .d-card .ic .lbl{font-size:12px;letter-spacing:.24em;color:var(--accent)}
+  .d-card .val{font-size:14px;color:var(--paper);line-height:1.7}
+  .d-quote{
+    margin-top:22px;padding:18px 18px 18px 20px;border-left:3px solid var(--seal);
+    background:rgba(181,70,46,.07);font-family:var(--font-body);font-size:14px;
+    color:var(--paper);line-height:2;letter-spacing:.08em;
+  }
+
+  /* ===== 描红组字 ===== */
+  .write-head{margin:8px 2px 14px}
+  .write-head h2{font-size:22px;letter-spacing:.14em}
+  .write-head .sub{font-size:11px;letter-spacing:.28em;color:rgba(240,233,218,.42);margin-top:4px}
+  .write-board{
+    position:relative;width:100%;aspect-ratio:1/1;border-radius:12px;overflow:hidden;
+    border:1px solid var(--line-strong);background:#171411;
+    touch-action:none;user-select:none;-webkit-user-select:none;
+  }
+  .write-board canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .write-tip{font-size:12px;letter-spacing:.14em;color:var(--paper-dim);margin-top:12px;text-align:center}
+  .write-actions{display:flex;gap:12px;margin-top:18px}
+  .write-actions .btn-ghost{
+    flex:1;min-height:50px;border:1px solid var(--line-strong);border-radius:6px;
+    font-size:14px;letter-spacing:.22em;color:var(--paper-dim);
+  }
+  .write-actions .btn-go{
+    flex:2;min-height:50px;background:var(--seal);color:var(--seal-ink);border-radius:6px;
+    font-size:15px;letter-spacing:.26em;
+  }
+  .write-actions .btn-go:disabled{opacity:.35;pointer-events:none}
+
+  /* ===== 字帖 ===== */
+  .album-head{display:flex;align-items:center;gap:14px;margin:6px 2px 18px}
+  .album-head .n{font-size:30px;letter-spacing:.06em}
+  .album-head .n b{font-family:var(--font-display);font-weight:400;color:var(--accent);font-size:34px}
+  .album-head .en{font-size:10px;letter-spacing:.3em;color:rgba(240,233,218,.4);margin-top:4px}
+  .album-progress{display:flex;align-items:center;gap:12px;margin-bottom:20px;font-size:12px;letter-spacing:.12em;color:var(--paper-dim)}
+  .album-progress .bar{flex:1;height:8px;background:rgba(240,233,218,.1);border-radius:4px;overflow:hidden}
+  .album-progress .fill{height:100%;width:0;background:linear-gradient(90deg,var(--seal),var(--accent));transition:width .5s ease}
+  .album-board{
+    position:relative;width:100%;border-radius:12px;overflow:hidden;
+    border:1px solid var(--line-strong);background:radial-gradient(120% 100% at 50% 0%, #F5EFE2, #EAE0CC 70%, #DFD3BC);
+    touch-action:none;
+  }
+  .album-board canvas{display:block;width:100%;height:auto}
+  .album-board::after{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(rgba(120,96,60,.12) 1px, transparent 1.5px);background-size:14px 14px;opacity:.35;
+  }
+  .album-actions{display:flex;gap:12px;margin-top:18px}
+  .album-actions .btn-main{
+    flex:1;min-height:52px;background:var(--seal);color:var(--seal-ink);border-radius:6px;
+    font-size:15px;letter-spacing:.2em;display:flex;align-items:center;justify-content:center;gap:8px;
+  }
+  .album-actions .btn-sub{
+    flex:1;min-height:52px;border:1px solid var(--line-strong);border-radius:6px;
+    font-size:14px;letter-spacing:.18em;color:var(--paper-dim);display:flex;align-items:center;justify-content:center;gap:8px;
+  }
+  .album-note{margin-top:16px;font-size:11px;letter-spacing:.16em;color:rgba(240,233,218,.4);text-align:center;line-height:2}
+
+  /* ===== 结果面板 ===== */
+  .panel-mask{
+    position:fixed;inset:0;z-index:80;background:rgba(12,10,9,.72);backdrop-filter:blur(4px);
+    display:none;align-items:center;justify-content:center;padding:24px;
+  }
+  .panel-mask.show{display:flex}
+  .panel{
+    width:100%;max-width:360px;background:var(--bg-soft);border:1px solid var(--line-strong);
+    border-radius:14px;padding:28px 22px 22px;text-align:center;
+    box-shadow:0 24px 70px rgba(0,0,0,.6);animation:viewIn .35s ease both;
+  }
+  .panel .p-seal{
+    width:64px;height:64px;margin:0 auto 14px;background:var(--seal);color:var(--seal-ink);
+    border-radius:6px;display:flex;align-items:center;justify-content:center;
+    font-family:var(--font-display);font-size:26px;
+    box-shadow:inset 0 0 0 2px rgba(0,0,0,.14);
+  }
+  .panel h3{font-size:22px;letter-spacing:.2em;color:var(--paper)}
+  .panel .p-sub{font-size:12px;letter-spacing:.16em;color:rgba(240,233,218,.5);margin-top:8px}
+  .panel .p-score{
+    margin:20px 0 6px;font-size:44px;color:var(--accent);font-family:var(--font-body);font-weight:700;
+  }
+  .panel .p-score span{font-size:14px;color:var(--paper-dim);font-weight:400;letter-spacing:.1em}
+  .panel .p-stats{
+    display:flex;justify-content:center;gap:26px;margin:10px 0 22px;
+    font-size:12px;color:var(--paper-dim);letter-spacing:.1em;
+  }
+  .panel .p-stats b{display:block;font-family:var(--font-display);font-weight:400;font-size:22px;color:var(--paper)}
+  .panel .p-actions{display:flex;gap:10px}
+  .panel .pa-ghost{
+    flex:1;min-height:48px;border:1px solid var(--line-strong);border-radius:6px;
+    font-size:13px;letter-spacing:.18em;color:var(--paper-dim);
+  }
+  .panel .pa-go{
+    flex:1.4;min-height:48px;background:var(--seal);color:var(--seal-ink);border-radius:6px;
+    font-size:14px;letter-spacing:.16em;
+  }
+
+  .toast{
+    position:fixed;left:50%;bottom:calc(44px + var(--safe-bottom));transform:translateX(-50%) translateY(20px);
+    z-index:90;background:rgba(240,233,218,.96);color:#1C1917;font-size:13px;letter-spacing:.1em;
+    padding:10px 20px;border-radius:30px;opacity:0;pointer-events:none;transition:all .3s ease;white-space:nowrap;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  .hidden{display:none !important}
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- ===== 视图：封面（启卷） ===== -->
+  <section class="view" id="view-cover">
+    <div class="cover-hero" style="background-image:url('cover.jpg')"></div>
+    <div class="cover-body">
+      <div class="cover-kicker">2026东方创意之星 · 大湾区旅游文创主题赛</div>
+      <h1 class="cover-title display">湾区字游</h1>
+      <div class="cover-sub">一字一城 · 集字湾区</div>
+      <div class="cover-note">拆字 · 解字 · 组字 ｜ 汉字互动 H5</div>
+      <button class="btn-primary" id="btn-enter">启 卷 入 湾</button>
+    </div>
+    <div class="cover-count" id="cover-count"></div>
+    <div class="cover-seal display">字游</div>
+  </section>
+
+  <!-- ===== 视图：选城 ===== -->
+  <section class="view" id="view-city">
+    <header class="topbar">
+      <div class="seal-tiny display">游</div>
+      <div class="t-title">选城入湾</div>
+      <div class="t-tag">PICK A CITY</div>
+    </header>
+    <div class="city-head">
+      <h2 class="display">一字一城</h2>
+      <div class="en">ELEVEN CITIES · ELEVEN CHARACTERS</div>
+    </div>
+    <div class="progress">
+      <span id="prog-label">0 / 11</span>
+      <div class="bar"><div class="fill" id="prog-fill"></div></div>
+    </div>
+    <div class="city-grid" id="city-grid"></div>
+    <div class="city-foot" id="city-foot">集齐 11 字，合成湾区字帖</div>
+  </section>
+
+  <!-- ===== 视图：拆字关卡 ===== -->
+  <section class="view" id="view-play">
+    <header class="topbar">
+      <button class="back" id="play-back" aria-label="返回">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F0E9DA" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+      </button>
+      <div class="t-title" id="play-title">拆字</div>
+      <div class="t-tag">SPLIT</div>
+    </header>
+    <div class="level-wrap">
+      <div class="level-head">
+        <div>
+          <div class="city-name display" id="play-city"></div>
+          <div class="level-en" id="play-en"></div>
+        </div>
+        <div class="score-chip"><span id="play-score">0</span> 分</div>
+      </div>
+      <div class="hint-line" id="play-hint"></div>
+      <div class="build-grid" id="build-grid">
+        <div class="ghost-char" id="ghost-char"></div>
+        <div class="slot-row" id="slot-row"></div>
+        <div class="win-stamp" id="play-stamp">
+          <div class="stamp-anim">拆<div class="sm">CHARACTER SPLIT</div></div>
+        </div>
+      </div>
+      <div class="parts-row" id="parts-row"></div>
+      <div class="level-actions">
+        <button class="btn-ghost" id="btn-reset-level">重 拆</button>
+        <button class="btn-go" id="btn-next-detail" disabled>观字解意</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 视图：解字 ===== -->
+  <section class="view" id="view-detail">
+    <header class="topbar">
+      <button class="back" id="detail-back" aria-label="返回">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F0E9DA" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+      </button>
+      <div class="t-title">解字</div>
+      <div class="t-tag">DECODE</div>
+    </header>
+    <div class="detail-hero">
+      <div class="big-char display" id="d-char"></div>
+      <div class="d-city" id="d-city"></div>
+      <div class="d-src" id="d-src"></div>
+    </div>
+    <div class="detail-grid" id="d-grid"></div>
+    <div class="d-quote" id="d-quote"></div>
+    <div class="level-actions" style="margin-top:26px">
+      <button class="btn-ghost" id="detail-skip">再看一城</button>
+      <button class="btn-go" id="btn-go-write">执笔组字</button>
+    </div>
+  </section>
+
+  <!-- ===== 视图：描红组字 ===== -->
+  <section class="view" id="view-write">
+    <header class="topbar">
+      <button class="back" id="write-back" aria-label="返回">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F0E9DA" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+      </button>
+      <div class="t-title">组字</div>
+      <div class="t-tag">WRITE</div>
+    </header>
+    <div class="write-head">
+      <h2 class="display" id="w-title">描红组字</h2>
+      <div class="sub" id="w-sub">沿墨迹描出「 」 一笔成字</div>
+    </div>
+    <div class="write-board" id="write-board">
+      <canvas id="write-canvas"></canvas>
+      <div class="win-stamp" id="write-stamp" style="z-index:6">
+        <div class="stamp-anim">字<div class="sm">CHARACTER SEALED</div></div>
+      </div>
+    </div>
+    <div class="write-tip" id="write-tip">指尖沿字描摹，墨迹铺满笔画即成字</div>
+    <div class="write-actions">
+      <button class="btn-ghost" id="btn-clear-write">重 写</button>
+      <button class="btn-go" id="btn-next-album" disabled>入帖传湾</button>
+    </div>
+  </section>
+
+  <!-- ===== 视图：字帖 ===== -->
+  <section class="view" id="view-album">
+    <header class="topbar">
+      <button class="back" id="album-back" aria-label="返回">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F0E9DA" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+      </button>
+      <div class="t-title">传湾字帖</div>
+      <div class="t-tag">ALBUM</div>
+    </header>
+    <div class="album-head">
+      <div>
+        <div class="n">湾区<b>字帖</b></div>
+        <div class="en">BAY AREA CHARACTER ALBUM</div>
+      </div>
+    </div>
+    <div class="album-progress">
+      <span id="alb-label">0 / 11</span>
+      <div class="bar"><div class="fill" id="alb-fill"></div></div>
+    </div>
+    <div class="album-board" id="album-board"><canvas id="album-canvas"></canvas></div>
+    <div class="album-actions">
+      <button class="btn-main" id="btn-download">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F5EEE0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11m0 0l-4-4m4 4l4-4M5 20h14"/></svg>
+        保存字帖
+      </button>
+      <button class="btn-sub" id="btn-copy">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F0E9DA" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>
+        复制分享语
+      </button>
+    </div>
+    <button class="btn-ghost" id="btn-restart-all" style="min-height:50px;border:1px solid var(--line-strong);border-radius:6px;font-size:13px;letter-spacing:.2em;color:rgba(240,233,218,.5);width:100%;margin-top:12px">重 游 湾 区（清空集字）</button>
+    <div class="album-note" id="album-note"></div>
+  </section>
+
+  <!-- ===== 结果面板 ===== -->
+  <div class="panel-mask" id="panel">
+    <div class="panel">
+      <div class="p-seal display" id="p-seal">拆</div>
+      <h3 id="p-title">拆字成</h3>
+      <div class="p-sub" id="p-sub"></div>
+      <div class="p-score"><span>本关得分</span><br><span id="p-score"></span></div>
+      <div class="p-stats">
+        <div>已集字<b id="p-collected">0</b></div>
+        <div>最高总分<b id="p-best">0</b></div>
+      </div>
+      <div class="p-actions">
+        <button class="pa-ghost" id="p-retry">再 来 一 局</button>
+        <button class="pa-go" id="p-next">继 续</button>
+      </div>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ===== 数据：11 城一字 ===== */
+  var CITIES = [
+    {id:"guangzhou", name:"广州", char:"穗", source:"五羊衔穗",
+     parts:["禾","惠"], slotMode:"row",
+     landmark:"广州塔 · 花城广场", craft:"广绣 · 醒狮", food:"早茶 · 艇仔粥",
+     story:"相传五位仙人骑五色羊，衔谷穗降临楚庭，广州由此得名「穗」。一穗一城，先拆后合，谷穗归位，花城丰年。"},
+    {id:"shenzhen", name:"深圳", char:"圳", source:"田边水渠",
+     parts:["土","川"], slotMode:"row",
+     landmark:"莲花山公园 · 平安大厦", craft:"科技创客之城", food:"生蚝 · 沙井蚝",
+     story:"「圳」本义为田边的水渠，一土一川，引水灌田。今日深圳从渔村长成科创之城，圳水仍在不息奔流。"},
+    {id:"hongkong", name:"香港", char:"帆", source:"维港千帆",
+     parts:["巾","凡"], slotMode:"row",
+     landmark:"维港夜景 · 太平山顶", craft:"粤剧 · 赛马文化", food:"丝袜奶茶 · 蛋挞",
+     story:"「帆」者，巾上生风。维多利亚港千帆竞渡，东方之珠的开放与流转，都写在这片帆影里。"},
+    {id:"macau", name:"澳门", char:"莲", source:"莲花宝地",
+     parts:["艹","连"], slotMode:"row",
+     landmark:"大三巴牌坊 · 妈阁庙", craft:"舞醉龙 · 土地诞", food:"葡挞 · 猪扒包",
+     story:"澳门古称莲岛，四面环水如莲花盛开。「莲」字上下合璧，中西交融的海上莲花宝地，含苞待放。"},
+    {id:"foshan", name:"佛山", char:"陶", source:"石湾陶艺",
+     parts:["阝","匋"], slotMode:"row",
+     landmark:"祖庙 · 岭南天地", craft:"石湾公仔 · 佛山狮头", food:"盲公饼 · 双皮奶",
+     story:"「陶」从阜从匋，土与窑火交融。石湾窑火千年不断，南狮与武术之乡的气韵，亦在陶土中成形。"},
+    {id:"dongguan", name:"东莞", char:"香", source:"莞香千年",
+     parts:["禾","日"], slotMode:"row",
+     landmark:"可园 · 东莞植物园", craft:"莞香制作技艺", food:"烧鹅濑粉 · 道滘粽",
+     story:"东莞古称莞邑，因盛产莞草、莞香得名。一禾一日，熏烟聚字，千年莞香袅袅不绝。"},
+    {id:"zhuhai", name:"珠海", char:"珠", source:"百岛之珠",
+     parts:["王","朱"], slotMode:"row",
+     landmark:"珠海渔女 · 港珠澳大桥", craft:"海洋城市 · 航展之都", food:"横琴蚝 · 海鲈",
+     story:"「珠」从玉朱声，海中生玉。珠海百岛星罗，如珠散落南海，大桥飞架，湾区明珠由此串联。"},
+    {id:"zhaoqing", name:"肇庆", char:"砚", source:"端砚文房",
+     parts:["石","见"], slotMode:"row",
+     landmark:"七星岩 · 鼎湖山", craft:"端砚制作技艺", food:"裹蒸粽 · 文㞧鲤",
+     story:"端砚为四大名砚之首，石中见文。「砚」字一石一见，磨墨晕字，七星岩摩崖石刻犹见墨香。"},
+    {id:"jiangmen", name:"江门", char:"碉", source:"开平碉楼",
+     parts:["石","周"], slotMode:"row",
+     landmark:"开平碉楼 · 小鸟天堂", craft:"侨乡建筑遗产", food:"陈皮宴 · 古井烧鹅",
+     story:"「碉」从石周声，垒石成楼。开平碉楼中西合璧，一砖一石垒起侨乡记忆，守望故土百年。"},
+    {id:"zhongshan", name:"中山", char:"侨", source:"侨乡故里",
+     parts:["亻","乔"], slotMode:"row",
+     landmark:"孙中山故居 · 孙文西路", craft:"小榄菊花会", food:"石岐乳鸽 · 粉果",
+     story:"「侨」者，人乔其居而心系故里。中山是伟人故里、著名侨乡，一封封侨批漂洋过海，写着归乡的心。"},
+    {id:"huizhou", name:"惠州", char:"湖", source:"鹅城西湖",
+     parts:["氵","胡"], slotMode:"row",
+     landmark:"惠州西湖 · 罗浮山", craft:"东坡寓惠遗风", food:"梅菜扣肉 · 东江酿豆腐",
+     story:"惠州古称鹅城，西湖山水如画。「湖」字三水相依，东坡曾寓居于此，涟漪成字，斯文在兹。"}
+  ];
+
+  var STATE = {
+    collected: [],
+    best: 0,
+    current: null,      // 当前 city id
+    score: 0,           // 本关累计
+    mistakes: 0,
+    t0: 0,
+    lastWasWrite: false
+  };
+
+  /* ===== localStorage（try/catch） ===== */
+  function loadSave(){
+    try{
+      var raw = localStorage.getItem("baychars_tour_v1");
+      if(!raw) return {collected:[], best:0};
+      var d = JSON.parse(raw);
+      if(!d || !Array.isArray(d.collected)) return {collected:[], best:0};
+      return {collected:d.collected, best:+d.best||0};
+    }catch(e){ return {collected:[], best:0}; }
+  }
+  function persist(){
+    try{
+      localStorage.setItem("baychars_tour_v1", JSON.stringify({collected:STATE.collected, best:STATE.best}));
+    }catch(e){}
+  }
+  var SAVE = loadSave();
+  STATE.collected = SAVE.collected.slice();
+  STATE.best = SAVE.best;
+
+  function getCity(id){
+    for(var i=0;i<CITIES.length;i++) if(CITIES[i].id===id) return CITIES[i];
+    return CITIES[0];
+  }
+  function isCollected(id){
+    for(var i=0;i<STATE.collected.length;i++) if(STATE.collected[i]===id) return true;
+    return false;
+  }
+  function collectedCount(){ return STATE.collected.length; }
+
+  /* ===== 路由 ===== */
+  function currentHash(){
+    var h = location.hash.replace(/^#\/?/, "");
+    return h || "cover";
+  }
+  function show(viewId){
+    var views = document.querySelectorAll(".view");
+    for(var i=0;i<views.length;i++) views[i].classList.remove("active");
+    var v = document.getElementById("view-"+viewId);
+    if(v) v.classList.add("active");
+    window.scrollTo(0,0);
+  }
+  function go(hash){
+    location.hash = hash;
+  }
+
+  /* ===== 印章 SVG ===== */
+  function sealIcon(s){
+    return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" fill="'+(s||"#B5462E")+'"/><text x="12" y="16.5" text-anchor="middle" font-size="11" fill="#F5EEE0" font-family="serif">游</text></svg>';
+  }
+  function penIcon(){
+    return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F0E9DA" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1-4L16 5l3 3L8 19l-4 1z"/><path d="M13.5 7.5l3 3"/></svg>';
+  }
+  function refreshIcon(){
+    return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F0E9DA" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.6-6.3"/><path d="M21 3v6h-6"/></svg>';
+  }
+
+  /* ===== 封面 ===== */
+  function renderCover(){
+    var n = collectedCount();
+    document.getElementById("cover-count").innerHTML = '已集字 <b>'+n+'</b> / '+CITIES.length+'<br>湾区字帖 · 一字一城';
+  }
+
+  /* ===== 选城 ===== */
+  function renderCity(){
+    var grid = document.getElementById("city-grid");
+    var html = "";
+    for(var i=0;i<CITIES.length;i++){
+      var c = CITIES[i];
+      var done = isCollected(c.id);
+      var cls = "city-card" + (done ? " done" : "");
+      var tag = done ? "集" : (i+1);
+      html += '<button class="'+cls+'" data-id="'+c.id+'">'+
+        '<span class="tag">'+tag+'</span>'+
+        '<span class="ch">'+c.char+'</span>'+
+        '<span class="nm">'+c.name+' · '+c.source+'</span>'+
+        '<span class="need">'+(done?'已入帖':'点此入城')+'</span>'+
+      '</button>';
+    }
+    grid.innerHTML = html;
+    var cards = grid.querySelectorAll(".city-card");
+    for(var j=0;j<cards.length;j++){
+      cards[j].addEventListener("click", function(){
+        var id = this.getAttribute("data-id");
+        startLevel(id);
+      });
+    }
+    updateProgress();
+  }
+  function updateProgress(){
+    var n = collectedCount();
+    var pct = Math.round(n/CITIES.length*100);
+    document.getElementById("prog-label").textContent = n+" / "+CITIES.length;
+    document.getElementById("prog-fill").style.width = pct+"%";
+    document.getElementById("alb-label").textContent = n+" / "+CITIES.length;
+    document.getElementById("alb-fill").style.width = pct+"%";
+    document.getElementById("cover-count") && renderCover();
+  }
+
+  /* ===== 拆字小游戏 ===== */
+  var build = {
+    city:null, slots:[], remaining:0, order:null
+  };
+
+  function startLevel(id){
+    STATE.current = id;
+    STATE.score = 0;
+    STATE.mistakes = 0;
+    STATE.lastWasWrite = false;
+    var c = getCity(id);
+    build.city = c;
+    build.order = shuffle(c.parts.slice());
+    build.remaining = c.parts.length;
+
+    document.getElementById("play-city").textContent = c.name + " · " + c.char;
+    document.getElementById("play-en").textContent = "CHARACTER SPLIT LEVEL";
+    document.getElementById("play-score").textContent = "0";
+    document.getElementById("ghost-char").textContent = c.char;
+    document.getElementById("play-hint").innerHTML = sealIcon() + '<span>拆开「'+c.char+'」字，将部件归位重组</span>';
+    document.getElementById("btn-next-detail").disabled = true;
+
+    var sr = document.getElementById("slot-row");
+    sr.innerHTML = "";
+    for(var i=0;i<c.parts.length;i++){
+      var slot = document.createElement("div");
+      slot.className = "slot";
+      slot.dataset.idx = i;
+      slot.dataset.part = "";
+      sr.appendChild(slot);
+    }
+
+    var pr = document.getElementById("parts-row");
+    pr.innerHTML = "";
+    for(var j=0;j<build.order.length;j++){
+      var b = document.createElement("button");
+      b.className = "part-btn";
+      b.dataset.part = build.order[j];
+      b.textContent = build.order[j];
+      b.setAttribute("aria-label", "部件 "+build.order[j]);
+      pr.appendChild(b);
+    }
+    bindPartInteractions();
+    STATE.t0 = Date.now();
+    renderStamp("play-stamp", "拆", "CHARACTER SPLIT");
+    document.getElementById("play-stamp").classList.remove("show");
+    go("#/play");
+  }
+
+  function shuffle(arr){
+    var a = arr.slice();
+    for(var i=a.length-1;i>0;i--){
+      var j = Math.floor(Math.random()*(i+1));
+      var t = a[i]; a[i]=a[j]; a[j]=t;
+    }
+    return a;
+  }
+
+  function bindPartInteractions(){
+    var btns = document.querySelectorAll("#parts-row .part-btn");
+    var slotRow = document.getElementById("slot-row");
+    var slots = slotRow.querySelectorAll(".slot");
+    var grid = document.getElementById("build-grid");
+    var dragEl = null;
+    var selectedPart = null;
+    var moved = false;
+
+    function deselect(){
+      for(var i=0;i<btns.length;i++) btns[i].classList.remove("selected");
+      selectedPart = null;
+    }
+    function clearHover(){
+      for(var j=0;j<slots.length;j++) slots[j].classList.remove("hovering");
+    }
+    function place(partText, slotEl, partBtn){
+      slotEl.dataset.part = partText;
+      slotEl.textContent = partText;
+      slotEl.classList.add("filled");
+      partBtn.classList.add("used");
+      build.remaining--;
+      updateLevelScore();
+      if(build.remaining===0){
+        onLevelComplete(false);
+      }
+    }
+    function tryPlace(partText, slotEl, partBtn){
+      var expect = build.city.parts[+slotEl.dataset.idx];
+      if(partText === expect){
+        place(partText, slotEl, partBtn);
+        return true;
+      }else{
+        STATE.mistakes++;
+        slotEl.classList.remove("mismatch");
+        void slotEl.offsetWidth;
+        slotEl.classList.add("mismatch");
+        updateLevelScore();
+        return false;
+      }
+    }
+    function updateLevelScore(){
+      var elapsed = Math.min(120, Math.round((Date.now()-STATE.t0)/1000));
+      var sc = Math.max(40, 200 - STATE.mistakes*22 - elapsed*2);
+      STATE.score = sc;
+      document.getElementById("play-score").textContent = sc;
+    }
+
+    for(var i=0;i<btns.length;i++){
+      (function(btn){
+        var partText = btn.dataset.part;
+        btn.addEventListener("pointerdown", function(e){
+          e.preventDefault();
+          moved = false;
+          if(dragEl) return;
+          if(btn.classList.contains("used")) return;
+          // 选中有无拖拽都记录
+          deselect();
+          btn.classList.add("selected");
+          selectedPart = btn;
+          var r = btn.getBoundingClientRect();
+          dragEl = document.createElement("div");
+          dragEl.className = "part-drag";
+          dragEl.textContent = partText;
+          dragEl.style.left = (e.clientX)+"px";
+          dragEl.style.top = (e.clientY)+"px";
+          document.body.appendChild(dragEl);
+          btn.setPointerCapture && btn.setPointerCapture(e.pointerId);
+        });
+        btn.addEventListener("pointermove", function(e){
+          if(!dragEl) return;
+          if(Math.abs(e.clientX - parseFloat(dragEl.style.left)) > 6 || Math.abs(e.clientY - parseFloat(dragEl.style.top)) > 6){
+            moved = true;
+          }
+          dragEl.style.left = e.clientX+"px";
+          dragEl.style.top = e.clientY+"px";
+          clearHover();
+          var target = hitSlot(e.clientX, e.clientY);
+          if(target) target.classList.add("hovering");
+        });
+        btn.addEventListener("pointerup", function(e){
+          if(!dragEl) return;
+          document.body.removeChild(dragEl);
+          dragEl = null;
+          var target = hitSlot(e.clientX, e.clientY);
+          if(moved && target){
+            tryPlace(partText, target, btn);
+            deselect();
+            return;
+          }
+          // 未拖拽：点选部件后等待点槽位
+          // 若之前已选中且点的是同一部件，则取消
+        });
+        btn.addEventListener("pointercancel", function(){
+          if(dragEl){ document.body.removeChild(dragEl); dragEl=null; }
+          clearHover();
+        });
+      })(btns[i]);
+    }
+
+    function hitSlot(x,y){
+      for(var k=0;k<slots.length;k++){
+        var r = slots[k].getBoundingClientRect();
+        if(x>=r.left && x<=r.right && y>=r.top && y<=r.bottom && !slots[k].classList.contains("filled")){
+          return slots[k];
+        }
+      }
+      return null;
+    }
+
+    for(var s=0;s<slots.length;s++){
+      (function(slot){
+        slot.addEventListener("pointerup", function(){
+          if(selectedPart && !slot.classList.contains("filled")){
+            var partText = selectedPart.dataset.part;
+            var ok = tryPlace(partText, slot, selectedPart);
+            deselect();
+          }
+        });
+      })(slots[s]);
+    }
+
+    // 重置
+    var resetBtn = document.getElementById("btn-reset-level");
+    resetBtn.onclick = function(){
+      startLevel(STATE.current);
+    };
+  }
+
+  function renderStamp(containerId, big, small){
+    var el = document.getElementById(containerId);
+    el.innerHTML = '<div class="stamp-anim">'+big+'<div class="sm">'+small+'</div></div>';
+  }
+
+  function onLevelComplete(onlyScore){
+    // 拆字完成：盖章 + 显示得分
+    var stamp = document.getElementById("play-stamp");
+    stamp.classList.add("show");
+    var btn = document.getElementById("btn-next-detail");
+    btn.disabled = false;
+    document.getElementById("btn-next-detail").textContent = "观字解意";
+    var sc = STATE.score;
+    STATE.lastWasWrite = false;
+    setTimeout(function(){
+      openPanel("拆", "拆字成", "「"+build.city.char+"」部件归位", sc, function(){
+        document.getElementById("btn-next-detail").click();
+      });
+    }, 650);
+  }
+
+  /* ===== 结果面板 ===== */
+  function openPanel(seal, title, sub, score, onNext, retryLabel){
+    document.getElementById("p-seal").textContent = seal;
+    document.getElementById("p-title").textContent = title;
+    document.getElementById("p-sub").textContent = sub;
+    document.getElementById("p-score").textContent = score;
+    document.getElementById("p-collected").textContent = collectedCount() + " / " + CITIES.length;
+    document.getElementById("p-best").textContent = STATE.best;
+    var mask = document.getElementById("panel");
+    mask.classList.add("show");
+    var next = document.getElementById("p-next");
+    next.onclick = function(){ mask.classList.remove("show"); onNext(); };
+    document.getElementById("p-retry").onclick = function(){
+      mask.classList.remove("show");
+      if(retryLabel === "restart-all"){
+        restartAll();
+      }else{
+        startLevel(STATE.current);
+      }
+    };
+  }
+
+  /* ===== 解字卡 ===== */
+  function renderDetail(){
+    var c = getCity(STATE.current);
+    document.getElementById("d-char").textContent = c.char;
+    document.getElementById("d-city").textContent = c.name + " · 一城一字";
+    document.getElementById("d-src").textContent = c.char + " · " + c.source;
+    var grid = document.getElementById("d-grid");
+    grid.innerHTML =
+      '<div class="d-card"><div class="ic">'+sealIcon('#E28466')+'<span class="lbl">字源</span></div><div class="val">'+c.source+'</div></div>'+
+      '<div class="d-card"><div class="ic">'+sealIcon('#E28466')+'<span class="lbl">地标</span></div><div class="val">'+c.landmark+'</div></div>'+
+      '<div class="d-card"><div class="ic">'+sealIcon('#E28466')+'<span class="lbl">非遗</span></div><div class="val">'+c.craft+'</div></div>'+
+      '<div class="d-card"><div class="ic">'+sealIcon('#E28466')+'<span class="lbl">食味</span></div><div class="val">'+c.food+'</div></div>';
+    document.getElementById("d-quote").textContent = c.story;
+    go("#/detail");
+  }
+
+  /* ===== 描红组字小游戏 ===== */
+  var write = {
+    canvas:null, ctx:null, mask:null, mctx:null,
+    size:320, dpr:1, drawing:false, last:null, inked:0, targetRatio:0.30
+  };
+
+  function initWrite(){
+    var cv = document.getElementById("write-canvas");
+    if(!write.ctx){
+      write.canvas = cv;
+      var dpr = Math.min(2, window.devicePixelRatio||1);
+      write.dpr = dpr;
+      cv.width = 320*dpr;
+      cv.height = 320*dpr;
+      cv.style.width = "100%";
+      cv.style.height = "auto";
+      write.ctx = cv.getContext("2d");
+      write.mask = document.createElement("canvas");
+      write.mask.width = 320*dpr;
+      write.mask.height = 320*dpr;
+      write.mctx = write.mask.getContext("2d");
+      var board = document.getElementById("write-board");
+      var ratio = 320/cv.getBoundingClientRect().height;
+      // 保持逻辑坐标
+    }
+    setupWriteLevel();
+  }
+
+  function drawGuide(c, ctx, size){
+    var dpr = write.dpr;
+    var s = size*dpr;
+    ctx.clearRect(0,0,s,s);
+    // 米字格
+    ctx.strokeStyle = "rgba(240,233,218,.12)";
+    ctx.lineWidth = 1;
+    var m = s*0.06;
+    ctx.strokeRect(m,m,s-2*m,s-2*m);
+    ctx.beginPath();
+    ctx.moveTo(m,m); ctx.lineTo(s-m,s-m);
+    ctx.moveTo(s-m,m); ctx.lineTo(m,s-m);
+    ctx.moveTo(s/2,m); ctx.lineTo(s/2,s-m);
+    ctx.moveTo(m,s/2); ctx.lineTo(s-m,s/2);
+    ctx.stroke();
+    // 描红字（虚影）
+    var c = getCity(STATE.current);
+    ctx.save();
+    ctx.font = "220px "+'"'+'Ma Shan Zheng'+'","KaiTi","STKaiti","Noto Serif SC",serif';
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "rgba(226,132,102,.30)";
+    ctx.fillText(c.char, s/2, s/2 + s*0.02);
+    ctx.restore();
+  }
+
+  function setupWriteLevel(){
+    var c = getCity(STATE.current);
+    document.getElementById("w-title").textContent = c.char + " · 组字";
+    document.getElementById("w-sub").textContent = "沿墨迹描出「"+c.char+"」 一笔成字";
+    write.inked = 0;
+    write.targetRatio = 0.30;
+    var ctx = write.ctx, mctx = write.mctx, dpr = write.dpr, s = 320*dpr;
+    drawGuide(write.canvas, ctx, 320);
+    // mask：目标字白色
+    mctx.clearRect(0,0,s,s);
+    mctx.font = "220px "+'"'+'Ma Shan Zheng'+'","KaiTi","STKaiti","Noto Serif SC",serif';
+    mctx.textAlign = "center";
+    mctx.textBaseline = "middle";
+    mctx.fillStyle = "#fff";
+    mctx.fillText(c.char, s/2, s/2 + s*0.02);
+    // 目标像素总数
+    var img = mctx.getImageData(0,0,s,s).data;
+    var total = 0;
+    for(var i=3;i<img.length;i+=4){ if(img[i]>128) total++; }
+    write.maskTotal = Math.max(1,total);
+    write.t0 = Date.now();
+    document.getElementById("write-tip").textContent = "指尖沿字描摹，墨迹铺满笔画即成字";
+    document.getElementById("btn-next-album").disabled = true;
+    var stamp = document.getElementById("write-stamp");
+    stamp.classList.remove("show");
+  }
+
+  function bindWrite(){
+    var board = document.getElementById("write-board");
+    var cv = write.canvas;
+    function toLocal(e){
+      var r = cv.getBoundingClientRect();
+      var x = (e.clientX - r.left) / r.width * 320;
+      var y = (e.clientY - r.top) / r.height * 320;
+      return {x:x, y:y, px:x*write.dpr, py:y*write.dpr};
+    }
+    cv.addEventListener("pointerdown", function(e){
+      e.preventDefault();
+      write.drawing = true;
+      write.last = toLocal(e);
+      cv.setPointerCapture && cv.setPointerCapture(e.pointerId);
+    });
+    cv.addEventListener("pointermove", function(e){
+      if(!write.drawing) return;
+      e.preventDefault();
+      var p = toLocal(e);
+      var ctx = write.ctx, dpr = write.dpr;
+      ctx.strokeStyle = "#F0E9DA";
+      ctx.lineWidth = 16*dpr;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.beginPath();
+      ctx.moveTo(write.last.px, write.last.py);
+      ctx.lineTo(p.px, p.py);
+      ctx.stroke();
+      write.last = p;
+    });
+    function endStroke(){
+      if(!write.drawing) return;
+      write.drawing = false;
+      // 判定覆盖
+      var dpr = write.dpr, s = 320*dpr;
+      var m = write.mctx.getImageData(0,0,s,s).data;
+      var t = write.ctx.getImageData(0,0,s,s).data;
+      var hit = 0, covered = 0;
+      for(var i=3;i<m.length;i+=4){
+        if(m[i]>128){
+          covered++;
+          if(t[i]>128) hit++;
+        }
+      }
+      var ratio = hit / Math.max(1, covered);
+      if(ratio >= write.targetRatio){
+        onWriteComplete();
+      }
+    }
+    cv.addEventListener("pointerup", endStroke);
+    cv.addEventListener("pointercancel", endStroke);
+    document.getElementById("btn-clear-write").addEventListener("click", function(){
+      setupWriteLevel();
+    });
+  }
+
+  function onWriteComplete(){
+    if(document.getElementById("write-stamp").classList.contains("show")) return;
+    var c = getCity(STATE.current);
+    // 成字实色
+    var ctx = write.ctx, dpr = write.dpr, s = 320*dpr;
+    ctx.save();
+    ctx.font = "220px "+'"'+'Ma Shan Zheng'+'","KaiTi","STKaiti","Noto Serif SC",serif';
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "#F0E9DA";
+    ctx.fillText(c.char, s/2, s/2 + s*0.02);
+    ctx.restore();
+    var stamp = document.getElementById("write-stamp");
+    renderStamp("write-stamp", "字", "CHARACTER SEALED");
+    stamp.classList.add("show");
+    document.getElementById("btn-next-album").disabled = false;
+    var elapsed = Math.min(90, Math.round((Date.now()-write.t0)/1000));
+    var sc = Math.max(30, 120 - elapsed*2);
+    STATE.score = sc;
+    document.getElementById("play-score") && (document.getElementById("play-score").textContent = sc);
+    // 集字
+    if(!isCollected(c.id)){
+      STATE.collected.push(c.id);
+      persist();
+    }
+    if(STATE.score > STATE.best){
+      STATE.best = STATE.score;
+      persist();
+    }
+    STATE.lastWasWrite = true;
+    setTimeout(function(){
+      openPanel("字", "组字成", "「"+c.char+"」写入湾区字帖", sc, function(){
+        document.getElementById("btn-next-album").click();
+      });
+    }, 700);
+  }
+
+  /* ===== 字帖 ===== */
+  function renderAlbum(){
+    var cv = document.getElementById("album-canvas");
+    var dpr = Math.min(2, window.devicePixelRatio||1);
+    var W = 360, H = 520;
+    cv.width = W*dpr; cv.height = H*dpr;
+    cv.style.width = "100%";
+    var ctx = cv.getContext("2d");
+    ctx.scale(dpr,dpr);
+    // 宣纸底
+    var g = ctx.createLinearGradient(0,0,0,H);
+    g.addColorStop(0,"#F6F0E3"); g.addColorStop(1,"#E7DCC6");
+    ctx.fillStyle = g;
+    ctx.fillRect(0,0,W,H);
+    // 纸张纤维
+    ctx.globalAlpha = .5;
+    for(var i=0;i<60;i++){
+      ctx.fillStyle = "rgba(140,110,70,"+(Math.random()*.08)+")";
+      ctx.fillRect(Math.random()*W, Math.random()*H, 1.5, Math.random()*3);
+    }
+    ctx.globalAlpha = 1;
+    // 红框
+    ctx.strokeStyle = "rgba(181,70,46,.55)";
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(18,18,W-36,H-36);
+    ctx.strokeRect(24,24,W-48,H-48);
+    // 题头
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#2E2A26";
+    ctx.font = "26px "+'"'+'Ma Shan Zheng'+'","KaiTi","STKaiti",serif';
+    ctx.fillText("湾区字游", W/2, 62);
+    ctx.font = "11px "+'"'+'Noto Serif SC'+'",serif';
+    ctx.fillStyle = "rgba(46,42,38,.6)";
+    ctx.fillText("ONE BAY · ONE CHARACTER · 一字一城", W/2, 84);
+    // 竖排集字：两列布局（左列 6 字，右列 5 字）
+    var chSize = 62;
+    var colX = [W/2 - 46, W/2 + 46];
+    var rowStep = 62;
+    var top = 124;
+    ctx.font = chSize+"px "+'"'+'Ma Shan Zheng'+'","KaiTi","STKaiti",serif';
+    for(var k=0;k<CITIES.length;k++){
+      var colIdx = k < 6 ? 0 : 1;
+      var rowIdx = k < 6 ? k : k - 6;
+      var x = colX[colIdx];
+      var y = top + rowIdx*rowStep;
+      var done = isCollected(CITIES[k].id);
+      if(done){
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = "#1C1917";
+      }else{
+        ctx.globalAlpha = .16;
+        ctx.fillStyle = "#6B5B45";
+      }
+      ctx.fillText(CITIES[k].char, x, y);
+    }
+    ctx.globalAlpha = 1;
+    // 底部印章
+    ctx.fillStyle = "#B5462E";
+    var sealS = 40;
+    var sx = W/2 - sealS/2, sy = H - 86;
+    ctx.fillRect(sx, sy, sealS, sealS);
+    ctx.fillStyle = "#F5EEE0";
+    ctx.font = "20px "+'"'+'Ma Shan Zheng'+'","KaiTi",serif';
+    ctx.fillText("字游", W/2, sy + sealS/2 + 7);
+    // 集字语
+    ctx.fillStyle = "rgba(46,42,38,.7)";
+    ctx.font = "11px "+'"'+'Noto Serif SC'+'",serif';
+    ctx.fillText("已集 " + collectedCount() + " / " + CITIES.length + " 字 · 2026 湾区漫游手帖", W/2, H - 36);
+    // 分享语
+    var share = "我在「湾区字游」集齐了 "+collectedCount()+"/"+CITIES.length+" 个湾区汉字，来和我比一比字帖！";
+    document.getElementById("album-note").textContent = share;
+    updateProgress();
+  }
+
+  function downloadAlbum(){
+    var cv = document.getElementById("album-canvas");
+    try{
+      var a = document.createElement("a");
+      a.download = "湾区字游-字帖-"+Date.now()+".png";
+      a.href = cv.toDataURL("image/png");
+      a.click();
+      toast("字帖已保存，去分享吧");
+    }catch(e){
+      toast("保存失败，可截图保存字帖");
+    }
+  }
+
+  function copyShare(){
+    var share = "我在「湾区字游」集齐了 "+collectedCount()+"/"+CITIES.length+" 个湾区汉字，来和我比一比字帖！";
+    try{
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(share).then(function(){
+          toast("分享语已复制");
+        }, function(){ fallbackCopy(share); });
+      }else{
+        fallbackCopy(share);
+      }
+    }catch(e){ fallbackCopy(share); }
+  }
+  function fallbackCopy(text){
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    try{ document.execCommand("copy"); toast("分享语已复制"); }
+    catch(e){ toast("长按文字可复制分享语"); }
+    document.body.removeChild(ta);
+  }
+
+  function restartAll(){
+    STATE.collected = [];
+    STATE.best = 0;
+    STATE.score = 0;
+    persist();
+    renderCity();
+    renderAlbum();
+    renderCover();
+    toast("已清空集字，湾区重游开始");
+  }
+
+  function toast(msg){
+    var t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(toast._t);
+    toast._t = setTimeout(function(){ t.classList.remove("show"); }, 1800);
+  }
+
+  /* ===== 事件绑定 ===== */
+  function bind(){
+    document.getElementById("btn-enter").addEventListener("click", function(){ go("#/city"); });
+
+    document.getElementById("play-back").addEventListener("click", function(){ go("#/city"); });
+    document.getElementById("detail-back").addEventListener("click", function(){ go("#/city"); });
+    document.getElementById("write-back").addEventListener("click", function(){ go("#/city"); });
+    document.getElementById("album-back").addEventListener("click", function(){ go("#/city"); });
+
+    document.getElementById("btn-next-detail").addEventListener("click", renderDetail);
+    document.getElementById("detail-skip").addEventListener("click", function(){ go("#/city"); });
+    document.getElementById("btn-go-write").addEventListener("click", function(){
+      initWrite();
+      bindWriteOnce();
+      go("#/write");
+    });
+    document.getElementById("btn-next-album").addEventListener("click", function(){
+      renderAlbum();
+      go("#/album");
+    });
+    document.getElementById("btn-download").addEventListener("click", downloadAlbum);
+    document.getElementById("btn-copy").addEventListener("click", copyShare);
+    document.getElementById("btn-restart-all").addEventListener("click", function(){
+      openPanel("游", "重游湾区", "清空全部集字，重新开始", STATE.best, function(){ restartAll(); }, "restart-all");
+    });
+  }
+
+  var writeBound = false;
+  function bindWriteOnce(){
+    if(writeBound) return;
+    writeBound = true;
+    bindWrite();
+  }
+
+  window.addEventListener("hashchange", function(){
+    var h = currentHash();
+    var base = h.split("/")[0];
+    if(base === "play" || base === "detail" || base === "write"){
+      if(!STATE.current){ go("#/city"); return; }
+    }
+    if(base === "play"){ show("play"); }
+    else if(base === "detail"){ show("detail"); }
+    else if(base === "write"){ show("write"); }
+    else if(base === "album"){ renderAlbum(); show("album"); }
+    else if(base === "city"){ renderCity(); show("city"); }
+    else { renderCover(); show("cover"); }
+  });
+
+  /* ===== 启动 ===== */
+  renderCover();
+  var h = currentHash();
+  var base = h.split("/")[0];
+  if(base === "city"){ renderCity(); show("city"); }
+  else if(base === "album"){ renderAlbum(); show("album"); }
+  else { show("cover"); }
+  bind();
+})();
+</script>
+</body>
+</html>
