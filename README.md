@@ -5,7 +5,7 @@
 ## 在线体验
 
 - GitHub Pages：<https://rookies777.github.io/bayarea-character-tour/>
-- 豆包在线版：<https://4m5gkpr5nw9t5.doubaoapps.com/app/app_17f3ukzzk2a>
+- 腾讯云静态托管：<https://rookies7-d5gk1e7gv08600d8f-1506242073.tcloudbaseapp.com/>
 
 ## 玩法
 
