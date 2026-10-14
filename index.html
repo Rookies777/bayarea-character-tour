@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#1C1917">
 <title>湾区字游 · 一字一城</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23B5462E'/%3E%3Ctext x='32' y='46' font-size='38' text-anchor='middle' fill='%23F5EEE0' font-family='KaiTi,serif'%3E字%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap">
 <style>
   :root{
@@ -99,25 +100,49 @@
   }
 
   /* ===== 封面 ===== */
-  #view-cover{justify-content:center;text-align:center;padding-top:0;padding-bottom:0}
+  #view-cover{justify-content:center;text-align:center;padding-top:0;padding-bottom:0;overflow:hidden}
   .cover-hero{
     position:absolute;inset:0;z-index:0;
+    will-change:transform;
+    transition:transform .5s cubic-bezier(.2,.7,.2,1);
+  }
+  .hero-bg{
+    position:absolute;inset:-5%;
     background-size:cover;background-position:center 30%;
+    animation:kenburns 26s ease-in-out infinite alternate;
+  }
+  @keyframes kenburns{
+    from{transform:scale(1) translate(0,0)}
+    to{transform:scale(1.09) translate(-1.2%, 1.6%)}
   }
   .cover-hero::after{
     content:"";position:absolute;inset:0;
     background:linear-gradient(180deg, rgba(28,25,23,.30) 0%, rgba(28,25,23,.55) 55%, #1C1917 96%);
   }
-  .cover-body{position:relative;z-index:1;margin-top:auto;padding:64px 8px 52px}
-  .cover-kicker{
-    font-size:12px;letter-spacing:.5em;color:var(--accent);margin-bottom:20px;
-    display:flex;align-items:center;justify-content:center;gap:14px;
-  }
-  .cover-kicker::before,.cover-kicker::after{content:"";width:34px;height:1px;background:rgba(226,132,102,.5)}
+  .cover-body{position:relative;z-index:1;margin-top:auto;padding:64px 8px 52px;will-change:transform}
   .cover-title{
-    font-size:88px;line-height:1.05;letter-spacing:.14em;color:var(--paper);
+    font-size:clamp(52px, 19.5vw, 88px);line-height:1.08;letter-spacing:.1em;color:var(--paper);
     text-shadow:0 4px 30px rgba(0,0,0,.5);
+    white-space:nowrap;
   }
+  .cover-title .ch{display:inline-block;opacity:0;animation:charIn .7s cubic-bezier(.2,1.4,.3,1) both}
+  .cover-title .ch:nth-child(1){animation-delay:.1s}
+  .cover-title .ch:nth-child(2){animation-delay:.26s}
+  .cover-title .ch:nth-child(3){animation-delay:.42s}
+  .cover-title .ch:nth-child(4){animation-delay:.58s}
+  @keyframes charIn{0%{opacity:0;transform:translateY(30px) scale(.8) rotate(-5deg)}100%{opacity:1;transform:none}}
+  .cover-hero::before{
+    content:"";position:absolute;inset:0;
+    background:radial-gradient(58% 42% at 50% 16%, rgba(226,132,102,.12), transparent 70%);
+    animation:breathe 5.5s ease-in-out infinite;
+  }
+  @keyframes breathe{0%,100%{opacity:.45;transform:scale(1)}50%{opacity:1;transform:scale(1.07)}}
+  .ink-dot{
+    position:absolute;border-radius:50%;pointer-events:none;
+    background:radial-gradient(circle at 35% 35%, rgba(226,201,158,.55), rgba(226,201,158,.08) 60%, transparent 72%);
+    animation:inkFloat linear infinite;
+  }
+  @keyframes inkFloat{0%{transform:translateY(0) translateX(0);opacity:0}12%{opacity:.75}80%{opacity:.35}100%{transform:translateY(-48vh) translateX(9vw);opacity:0}}
   .cover-sub{margin-top:18px;font-size:15px;letter-spacing:.42em;color:var(--paper-dim)}
   .cover-note{margin-top:34px;font-size:12px;letter-spacing:.3em;color:rgba(240,233,218,.45)}
   .btn-primary{
@@ -126,7 +151,9 @@
     background:var(--seal);color:var(--seal-ink);
     font-size:17px;letter-spacing:.3em;border-radius:6px;
     box-shadow:0 10px 30px rgba(181,70,46,.35);
+    transition:transform .18s ease, box-shadow .18s ease;
   }
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 16px 44px rgba(181,70,46,.55)}
   .btn-primary:active{transform:translateY(2px)}
   .cover-seal{
     position:absolute;right:26px;bottom:30px;z-index:1;
@@ -134,7 +161,9 @@
     border-radius:5px;display:flex;align-items:center;justify-content:center;
     font-family:var(--font-display);font-size:24px;
     box-shadow:inset 0 0 0 2px rgba(0,0,0,.15), 0 8px 24px rgba(0,0,0,.4);
+    animation:sealDrop .55s cubic-bezier(.2,1.6,.3,1) .85s both;
   }
+  @keyframes sealDrop{0%{transform:scale(2.4) rotate(-14deg);opacity:0}55%{transform:scale(.92) rotate(2deg);opacity:1}100%{transform:scale(1) rotate(0)}}
   .cover-count{
     position:absolute;left:26px;bottom:40px;z-index:1;text-align:left;
     font-size:11px;letter-spacing:.22em;color:rgba(240,233,218,.6);line-height:1.9;
@@ -145,6 +174,13 @@
   .city-head{margin:10px 2px 20px}
   .city-head h2{font-size:30px;letter-spacing:.1em;color:var(--paper)}
   .city-head .en{font-size:11px;letter-spacing:.34em;color:rgba(240,233,218,.4);margin-top:6px}
+  .city-tagline{
+    margin-top:12px;font-size:12px;letter-spacing:.24em;color:var(--accent);
+    display:flex;align-items:center;gap:12px;white-space:nowrap;
+  }
+  .city-tagline::before,.city-tagline::after{content:"";height:1px;flex:1}
+  .city-tagline::before{background:linear-gradient(90deg,transparent,rgba(226,132,102,.45))}
+  .city-tagline::after{background:linear-gradient(90deg,rgba(226,132,102,.45),transparent)}
   .progress{
     display:flex;align-items:center;gap:12px;margin:18px 0 22px;
     font-size:12px;letter-spacing:.14em;color:var(--paper-dim);
@@ -156,10 +192,18 @@
     position:relative;padding:16px 8px 14px;text-align:center;
     border:1px solid var(--line);border-radius:10px;background:rgba(240,233,218,.03);
     min-height:118px;display:flex;flex-direction:column;align-items:center;gap:2px;
+    transition:transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+    animation:cardIn .5s ease backwards;animation-delay:calc(var(--i,0)*.045s);
   }
+  @keyframes cardIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  .city-card:hover{transform:perspective(560px) rotateX(3.5deg) rotateY(-3.5deg) translateY(-5px);border-color:rgba(226,132,102,.5);box-shadow:0 14px 30px rgba(0,0,0,.4)}
   .city-card:active{background:rgba(240,233,218,.07)}
   .city-card .ch{font-family:var(--font-display);font-size:46px;line-height:1.2;color:var(--paper)}
   .city-card .nm{font-size:13px;letter-spacing:.18em;color:var(--paper-dim);margin-top:6px}
+  .city-card .lm{
+    font-size:10px;color:rgba(226,132,102,.6);letter-spacing:.08em;margin-top:3px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;
+  }
   .city-card .tag{
     position:absolute;top:10px;right:10px;font-size:10px;letter-spacing:.08em;
     color:rgba(240,233,218,.35);border:1px solid var(--line);border-radius:3px;padding:2px 6px;
@@ -174,8 +218,62 @@
     margin-top:auto;padding-top:6px;font-size:10px;color:rgba(240,233,218,.4);letter-spacing:.12em;
   }
   .city-foot{
-    margin-top:26px;text-align:center;font-size:11px;letter-spacing:.2em;color:rgba(240,233,218,.4);
+    margin-top:22px;text-align:center;font-size:11px;letter-spacing:.2em;color:rgba(240,233,218,.4);
   }
+  .travel-tip{
+    margin-top:24px;padding:14px 16px;display:flex;align-items:center;gap:12px;
+    border:1px dashed rgba(226,132,102,.45);border-radius:10px;background:rgba(226,132,102,.06);
+    cursor:pointer;transition:background .2s ease, border-color .2s ease;
+  }
+  .travel-tip:hover,.travel-tip:focus-visible{background:rgba(226,132,102,.12);border-color:rgba(226,132,102,.7)}
+  .travel-tip .tt-label{
+    flex:0 0 auto;font-size:11px;letter-spacing:.2em;color:var(--seal-ink);
+    background:var(--seal);padding:6px 10px;border-radius:4px;
+  }
+  .travel-tip .tt-text{
+    flex:1;font-size:13px;line-height:1.7;color:var(--paper-dim);letter-spacing:.04em;
+    transition:opacity .2s ease;
+  }
+  .travel-tip .tt-arrow{flex:0 0 auto;font-size:11px;letter-spacing:.12em;color:var(--accent)}
+  .quiz-entry{
+    margin-top:14px;padding:14px 16px;display:flex;align-items:center;gap:12px;
+    border:1px solid rgba(226,132,102,.55);border-radius:10px;
+    background:linear-gradient(135deg, rgba(226,132,102,.14), rgba(226,132,102,.04));
+    cursor:pointer;transition:transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+  }
+  .quiz-entry:hover,.quiz-entry:focus-visible{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 10px 24px rgba(0,0,0,.3)}
+  .quiz-entry .qe-seal{
+    width:40px;height:40px;flex:0 0 auto;background:var(--seal);color:var(--seal-ink);border-radius:6px;
+    display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:20px;
+    box-shadow:inset 0 0 0 2px rgba(0,0,0,.12);
+  }
+  .quiz-entry .qe-title{font-size:15px;letter-spacing:.16em;color:var(--paper)}
+  .quiz-entry .qe-sub{font-size:11px;letter-spacing:.08em;color:var(--paper-dim);margin-top:3px}
+  .quiz-entry .qe-arrow{margin-left:auto;flex:0 0 auto;font-size:11px;letter-spacing:.14em;color:var(--accent)}
+
+  /* ===== 湾区问答 ===== */
+  .quiz-progress{display:flex;align-items:center;gap:12px;margin:8px 2px 16px;font-size:12px;letter-spacing:.14em;color:var(--paper-dim)}
+  .quiz-progress .bar{flex:1;height:6px;background:rgba(240,233,218,.1);border-radius:3px;overflow:hidden}
+  .quiz-progress .fill{height:100%;width:0;background:linear-gradient(90deg,var(--seal),var(--accent));border-radius:3px;transition:width .4s ease}
+  .quiz-clue{border:1px solid var(--line-strong);border-radius:12px;padding:18px 16px 12px;background:rgba(240,233,218,.03);animation:gridIn .45s ease backwards}
+  .qc-head{font-size:20px;letter-spacing:.34em;color:var(--accent);margin-bottom:12px;text-align:center;font-family:var(--font-display)}
+  .qc-item{display:flex;gap:10px;align-items:baseline;padding:9px 2px;border-bottom:1px dashed var(--line)}
+  .qc-item:last-child{border-bottom:0}
+  .qc-lbl{flex:0 0 auto;font-size:11px;letter-spacing:.2em;color:var(--seal-ink);background:var(--seal);padding:3px 9px;border-radius:3px}
+  .qc-val{font-size:15px;color:var(--paper);letter-spacing:.05em;line-height:1.7}
+  .quiz-opts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+  .qo{
+    display:flex;align-items:center;gap:10px;padding:14px 12px;text-align:left;
+    border:1px solid var(--line-strong);border-radius:10px;background:rgba(240,233,218,.04);
+    transition:transform .18s ease, border-color .2s ease, background .2s ease;
+  }
+  .qo .qo-ch{font-family:var(--font-display);font-size:32px;color:var(--accent);flex:0 0 auto}
+  .qo .qo-nm{font-size:15px;letter-spacing:.14em;color:var(--paper)}
+  .qo:hover:not(:disabled){transform:translateY(-3px);border-color:rgba(226,132,102,.55)}
+  .qo.correct{border-color:#7FB069;background:rgba(127,176,105,.16);animation:slotPop .35s ease}
+  .qo.wrong{border-color:var(--seal);background:rgba(181,70,46,.16);animation:shake .4s ease}
+  .qo:disabled{opacity:.6}
+  .quiz-feedback{min-height:46px;margin-top:18px;text-align:center;font-size:13px;letter-spacing:.18em;color:var(--paper-dim);display:flex;align-items:center;justify-content:center}
 
   /* ===== 拆字关卡 ===== */
   .level-wrap{flex:1;display:flex;flex-direction:column}
@@ -197,12 +295,16 @@
     border:1px solid var(--line-strong);border-radius:12px;
     background:radial-gradient(80% 80% at 50% 40%, rgba(240,233,218,.045), transparent 70%);
     touch-action:none;user-select:none;-webkit-user-select:none;
+    animation:gridIn .55s ease backwards;
   }
+  @keyframes gridIn{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:none}}
   .ghost-char{
     position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
     font-family:var(--font-display);font-size:min(46vw,230px);line-height:1;
     color:rgba(240,233,218,.30);pointer-events:none;letter-spacing:.04em;
+    animation:fadeIn 1s ease backwards;
   }
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
   .slot-row{
     position:absolute;inset:10%;display:flex;align-items:stretch;gap:8px;
   }
@@ -213,7 +315,8 @@
     background:rgba(226,132,102,.05);transition:all .25s ease;
     min-height:80px;
   }
-  .slot.filled{border-style:solid;border-color:rgba(226,132,102,.75);background:rgba(226,132,102,.10)}
+  .slot.filled{border-style:solid;border-color:rgba(226,132,102,.75);background:rgba(226,132,102,.10);animation:slotPop .32s ease}
+  @keyframes slotPop{0%{transform:scale(1)}45%{transform:scale(1.1)}100%{transform:scale(1)}}
   .slot.hovering{border-color:var(--accent);background:rgba(226,132,102,.16);transform:scale(1.02)}
   .slot.mismatch{animation:shake .4s ease}
   @keyframes shake{0%,100%{transform:none}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
@@ -221,9 +324,10 @@
   .part-btn{
     min-height:72px;border:1px solid var(--line-strong);border-radius:10px;
     background:rgba(240,233,218,.05);font-family:var(--font-display);
-    font-size:40px;color:var(--paper);transition:all .2s ease;
+    font-size:40px;color:var(--paper);transition:transform .15s ease, background .2s ease, box-shadow .2s ease;
     touch-action:none;-webkit-user-select:none;user-select:none;
   }
+  .part-btn:hover:not(.used):not(.selected){transform:translateY(-3px);background:rgba(240,233,218,.1)}
   .part-btn:active{background:rgba(240,233,218,.12)}
   .part-btn.selected{border-color:var(--accent);background:rgba(226,132,102,.16);box-shadow:0 0 0 3px rgba(226,132,102,.2)}
   .part-btn.used{opacity:.22;pointer-events:none;border-style:dashed}
@@ -262,11 +366,20 @@
 
   /* ===== 解字卡 ===== */
   .detail-hero{text-align:center;margin:14px 0 6px}
-  .detail-hero .big-char{font-family:var(--font-display);font-size:min(42vw,220px);line-height:1.15;color:var(--paper)}
+  .detail-hero .big-char{font-family:var(--font-display);font-size:min(42vw,220px);line-height:1.15;color:var(--paper);animation:inkOpen .85s cubic-bezier(.2,1.3,.3,1) backwards}
+  @keyframes inkOpen{from{opacity:0;transform:scale(1.22);filter:blur(8px)}to{opacity:1;transform:none;filter:none}}
   .detail-hero .d-city{font-size:16px;letter-spacing:.4em;color:var(--accent);margin-top:2px}
   .detail-hero .d-src{font-size:13px;letter-spacing:.2em;color:var(--paper-dim);margin-top:10px}
   .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:22px}
   .d-card{border:1px solid var(--line);border-radius:10px;padding:16px 14px;background:rgba(240,233,218,.03)}
+  .d-card.d-photo{
+    cursor:pointer;transition:transform .18s ease, border-color .2s ease, box-shadow .2s ease;
+  }
+  .d-card.d-photo:hover,.d-card.d-photo:focus-visible{
+    transform:translateY(-3px);border-color:rgba(226,132,102,.55);
+    box-shadow:0 10px 24px rgba(0,0,0,.3);outline:none;
+  }
+  .d-card.d-photo .val .see{font-size:10px;color:var(--accent);letter-spacing:.1em;margin-left:6px;white-space:nowrap}
   .d-card .ic{display:flex;align-items:center;gap:8px;margin-bottom:8px}
   .d-card .ic .lbl{font-size:12px;letter-spacing:.24em;color:var(--accent)}
   .d-card .val{font-size:14px;color:var(--paper);line-height:1.7}
@@ -310,7 +423,9 @@
     position:relative;width:100%;border-radius:12px;overflow:hidden;
     border:1px solid var(--line-strong);background:radial-gradient(120% 100% at 50% 0%, #F5EFE2, #EAE0CC 70%, #DFD3BC);
     touch-action:none;
+    animation:scrollOpen .75s cubic-bezier(.22,1.2,.3,1) backwards;
   }
+  @keyframes scrollOpen{from{opacity:0;transform:translateY(22px) scale(.965)}to{opacity:1;transform:none}}
   .album-board canvas{display:block;width:100%;height:auto}
   .album-board::after{
     content:"";position:absolute;inset:0;pointer-events:none;
@@ -365,6 +480,33 @@
     font-size:14px;letter-spacing:.16em;
   }
 
+  /* ===== 图片查看面板 ===== */
+  .img-mask{
+    position:fixed;inset:0;z-index:85;background:rgba(12,10,9,.8);backdrop-filter:blur(6px);
+    display:none;align-items:center;justify-content:center;padding:24px;
+  }
+  .img-mask.show{display:flex;animation:viewIn .3s ease both}
+  .img-panel{
+    position:relative;width:100%;max-width:440px;background:var(--bg-soft);
+    border:1px solid var(--line-strong);border-radius:14px;overflow:hidden;
+    box-shadow:0 24px 70px rgba(0,0,0,.6);animation:viewIn .35s ease both;
+  }
+  .img-photo{position:relative;width:100%;aspect-ratio:4/3;background:#14110e}
+  .img-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+  .img-meta{padding:18px 20px 22px;text-align:center}
+  .img-lbl{
+    display:inline-block;font-size:11px;letter-spacing:.24em;color:var(--seal-ink);
+    background:var(--seal);padding:5px 14px;border-radius:30px;margin-bottom:10px;
+  }
+  .img-city{font-family:var(--font-display);font-size:24px;color:var(--paper);letter-spacing:.14em}
+  .img-desc{margin-top:8px;font-size:13px;letter-spacing:.06em;color:var(--paper-dim);line-height:1.8}
+  .img-close{
+    position:absolute;top:12px;right:12px;z-index:2;width:36px;height:36px;border-radius:50%;
+    background:rgba(12,10,9,.55);border:1px solid rgba(240,233,218,.25);
+    display:flex;align-items:center;justify-content:center;color:var(--paper);
+  }
+  .img-close:active{background:rgba(12,10,9,.85)}
+
   .toast{
     position:fixed;left:50%;bottom:calc(44px + var(--safe-bottom));transform:translateX(-50%) translateY(20px);
     z-index:90;background:rgba(240,233,218,.96);color:#1C1917;font-size:13px;letter-spacing:.1em;
@@ -379,10 +521,11 @@
 <div id="app">
   <!-- ===== 视图：封面（启卷） ===== -->
   <section class="view" id="view-cover">
-    <div class="cover-hero" style="background-image:url('cover.jpg')"></div>
+    <div class="cover-hero">
+      <div class="hero-bg" style="background-image:url('https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/VNEubPAS4o4xBNxdbGVcyh0rnah')"></div>
+    </div>
     <div class="cover-body">
-      <div class="cover-kicker">2026东方创意之星 · 大湾区旅游文创主题赛</div>
-      <h1 class="cover-title display">湾区字游</h1>
+      <h1 class="cover-title display"><span class="ch">湾</span><span class="ch">区</span><span class="ch">字</span><span class="ch">游</span></h1>
       <div class="cover-sub">一字一城 · 集字湾区</div>
       <div class="cover-note">拆字 · 解字 · 组字 ｜ 汉字互动 H5</div>
       <button class="btn-primary" id="btn-enter">启 卷 入 湾</button>
@@ -401,12 +544,26 @@
     <div class="city-head">
       <h2 class="display">一字一城</h2>
       <div class="en">ELEVEN CITIES · ELEVEN CHARACTERS</div>
+      <div class="city-tagline">十一座城 · 一段湾区文旅漫游</div>
     </div>
     <div class="progress">
       <span id="prog-label">0 / 11</span>
       <div class="bar"><div class="fill" id="prog-fill"></div></div>
     </div>
     <div class="city-grid" id="city-grid"></div>
+    <div class="travel-tip" id="travel-tip" role="button" tabindex="0" aria-label="湾区文旅锦囊，点击换一条">
+      <span class="tt-label">文旅锦囊</span>
+      <span class="tt-text" id="tt-text"></span>
+      <span class="tt-arrow">换一条</span>
+    </div>
+    <div class="quiz-entry" id="quiz-entry" role="button" tabindex="0" aria-label="湾区问答猜城游戏">
+      <span class="qe-seal display">问</span>
+      <div class="qe-mid">
+        <div class="qe-title">湾区问答 · 猜城</div>
+        <div class="qe-sub">看地标 / 非遗 / 食味线索，认出十一座城</div>
+      </div>
+      <span class="qe-arrow">入城作答</span>
+    </div>
     <div class="city-foot" id="city-foot">集齐 11 字，合成湾区字帖</div>
   </section>
 
@@ -525,6 +682,39 @@
     <div class="album-note" id="album-note"></div>
   </section>
 
+  <!-- ===== 视图：湾区问答 ===== -->
+  <section class="view" id="view-quiz">
+    <header class="topbar">
+      <button class="back" id="quiz-back" aria-label="返回">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F0E9DA" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+      </button>
+      <div class="t-title">湾区问答</div>
+      <div class="t-tag">GUESS</div>
+    </header>
+    <div class="quiz-progress">
+      <span id="q-label">1 / 8</span>
+      <div class="bar"><div class="fill" id="q-fill"></div></div>
+    </div>
+    <div class="quiz-clue" id="quiz-clue"></div>
+    <div class="quiz-opts" id="quiz-opts"></div>
+    <div class="quiz-feedback" id="quiz-feedback"></div>
+  </section>
+
+  <!-- ===== 图片查看面板 ===== -->
+  <div class="img-mask" id="img-mask" role="dialog" aria-modal="true" aria-label="城市图片详情">
+    <div class="img-panel">
+      <button class="img-close" id="img-close" aria-label="关闭">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F0E9DA" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+      <div class="img-photo"><img id="img-photo" alt="城市文旅图片"></div>
+      <div class="img-meta">
+        <div class="img-lbl" id="img-lbl">地标</div>
+        <div class="img-city" id="img-city"></div>
+        <div class="img-desc" id="img-desc"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- ===== 结果面板 ===== -->
   <div class="panel-mask" id="panel">
     <div class="panel">
@@ -553,48 +743,73 @@
   var CITIES = [
     {id:"guangzhou", name:"广州", char:"穗", source:"五羊衔穗",
      parts:["禾","惠"], slotMode:"row",
-     landmark:"广州塔 · 花城广场", craft:"广绣 · 醒狮", food:"早茶 · 艇仔粥",
+     landmark:"广州塔 · 花城广场", craft:"广绣 · 醒狮", food:"早茶 · 艇仔粥", season:"四季皆宜 · 春秋最宜", line:"广州塔 — 花城广场 — 永庆坊",
+     imgs:{"src":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/AWbhbhYSwoSz85xyGW2cHV6lnNq","landmark":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/TRqTbFqdaowsaPxmXXLcaowdnOh","craft":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/SxNSb6pWTo8Ymbx3Qbic5q8BnAf","food":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/MhV1bjTwXotakwxP332c7HRanSf","season":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/BJppbadcAoihH5xJBgrcCB5Knvf","line":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/Uzcab9XqAog2fdxjvjdcSVr9nzh"},
      story:"相传五位仙人骑五色羊，衔谷穗降临楚庭，广州由此得名「穗」。一穗一城，先拆后合，谷穗归位，花城丰年。"},
     {id:"shenzhen", name:"深圳", char:"圳", source:"田边水渠",
      parts:["土","川"], slotMode:"row",
-     landmark:"莲花山公园 · 平安大厦", craft:"科技创客之城", food:"生蚝 · 沙井蚝",
+     landmark:"莲花山公园 · 平安大厦", craft:"科技创客之城", food:"生蚝 · 沙井蚝", season:"秋冬宜人", line:"莲花山 — 深圳湾 — 南头古城",
+     imgs:{"src":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/K7K1b1TkGos48axJzK1co2hBnoh","landmark":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/RhxZbzMs1o3X2Uxr22icVJbJnEd","craft":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/Okh6b3Og4oiXaEx9BKkcuHqGn3b","food":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/UlMLbyubfoQkKvxmCieckZssnuh","season":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/G2BTbXzbKoEehRx21A4cCCQknXc","line":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/OTmobJpp0olNhHxCUAoc02KGnTh"},
      story:"「圳」本义为田边的水渠，一土一川，引水灌田。今日深圳从渔村长成科创之城，圳水仍在不息奔流。"},
     {id:"hongkong", name:"香港", char:"帆", source:"维港千帆",
      parts:["巾","凡"], slotMode:"row",
-     landmark:"维港夜景 · 太平山顶", craft:"粤剧 · 赛马文化", food:"丝袜奶茶 · 蛋挞",
+     landmark:"维港夜景 · 太平山顶", craft:"粤剧 · 赛马文化", food:"丝袜奶茶 · 蛋挞", season:"秋冬清爽", line:"维港夜景 — 太平山顶 — 中环街市",
+     imgs:{"src":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/Wl2HbTPEroG7MpxQyO4cTleanWb","landmark":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/JDvebHaUWoT2UoxzS5NcEkv9n5c","craft":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/W0RNbRwUhofa9fxeFl8cH2UTn7e","food":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/YnsobZa62oTLRuxlC0BcfzPWn1e","season":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/KsXMbaY4aoP0ofxqkvycOa5onle","line":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/JiodblnLrolG1Rx16SEczIIFnTf"},
      story:"「帆」者，巾上生风。维多利亚港千帆竞渡，东方之珠的开放与流转，都写在这片帆影里。"},
     {id:"macau", name:"澳门", char:"莲", source:"莲花宝地",
      parts:["艹","连"], slotMode:"row",
-     landmark:"大三巴牌坊 · 妈阁庙", craft:"舞醉龙 · 土地诞", food:"葡挞 · 猪扒包",
+     landmark:"大三巴牌坊 · 妈阁庙", craft:"舞醉龙 · 土地诞", food:"葡挞 · 猪扒包", season:"秋冬最宜", line:"大三巴 — 妈阁庙 — 官也街",
+     imgs:{"src":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/TvG9b4sF4otCjtxBD3PcNEGznHd","landmark":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/UjyGbBBBOoAuB7xZCXTcstdrnOc","craft":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/MpvhbsbNho9jouxuSs4ckbAmnrR","food":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/DXvTb1eHyogjfkxjdbDcykPUnng","season":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/R6eLbcJT6obM6Sx9G7gcVappnXb","line":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/XOsSbqKB6oBoLixKG0WcO2Q1nse"},
      story:"澳门古称莲岛，四面环水如莲花盛开。「莲」字上下合璧，中西交融的海上莲花宝地，含苞待放。"},
     {id:"foshan", name:"佛山", char:"陶", source:"石湾陶艺",
      parts:["阝","匋"], slotMode:"row",
-     landmark:"祖庙 · 岭南天地", craft:"石湾公仔 · 佛山狮头", food:"盲公饼 · 双皮奶",
+     landmark:"祖庙 · 岭南天地", craft:"石湾公仔 · 佛山狮头", food:"盲公饼 · 双皮奶", season:"春秋宜游", line:"祖庙 — 岭南天地 — 南风古灶",
+     imgs:{"src":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/FmBSbg7N0oxNXmxht2ZcRO9WnUd","landmark":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/TroTbmAr0o9ZqRxcqJCcIcA1nZe","craft":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/TUCobtF9MoSbInxYrsfcyvuonED","food":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/DSfJbQRMdo6xkrxnQ1AcHxUln2e","season":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/Gt7xbWfKfojLmYx0wcqcyVu8nJd","line":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/Qrb1bkNXvoxXkZx0CrHcx9u9nEh"},
      story:"「陶」从阜从匋，土与窑火交融。石湾窑火千年不断，南狮与武术之乡的气韵，亦在陶土中成形。"},
     {id:"dongguan", name:"东莞", char:"香", source:"莞香千年",
      parts:["禾","日"], slotMode:"row",
-     landmark:"可园 · 东莞植物园", craft:"莞香制作技艺", food:"烧鹅濑粉 · 道滘粽",
+     landmark:"可园 · 东莞植物园", craft:"莞香制作技艺", food:"烧鹅濑粉 · 道滘粽", season:"秋冬宜游", line:"可园 — 莞香园 — 石排古村",
+     imgs:{"src":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/GRvYbJrtZoya6wxCnXBcU3sfn9c","landmark":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/LKq2bV038oGevWxcRctcRiQvnsh","craft":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/QBxKbJO5joD3NxxHwO1cMYg4nVh","food":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/DVFXbkJFrojJLax5yLTcmDR8nUi","season":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/RsC4bXTq2oGv8UxMo03cpQ2SnE2","line":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/DSzAbKKwsoMYHIxkeQ7cJ169nhh"},
      story:"东莞古称莞邑，因盛产莞草、莞香得名。一禾一日，熏烟聚字，千年莞香袅袅不绝。"},
     {id:"zhuhai", name:"珠海", char:"珠", source:"百岛之珠",
      parts:["王","朱"], slotMode:"row",
-     landmark:"珠海渔女 · 港珠澳大桥", craft:"海洋城市 · 航展之都", food:"横琴蚝 · 海鲈",
+     landmark:"珠海渔女 · 港珠澳大桥", craft:"海洋城市 · 航展之都", food:"横琴蚝 · 海鲈", season:"春夏最佳", line:"珠海渔女 — 情侣路 — 港珠澳大桥",
+     imgs:{"src":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/OLePbqCaIosIOExEacYcTJbonmc","landmark":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/SdxSbrOh5oCWKyxIuSEcmCqZnLh","craft":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/Eq7pbwMImopGf9xh9XwcWtqqnof","food":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/RcDobkQ1Lom2HRx37ZZc9KSAnwd","season":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/BcJLbbtbBo8zkKxSIcNcM4qtnTc","line":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/VfrSbPUPJolFs5xn3QacWSPfnXd"},
      story:"「珠」从玉朱声，海中生玉。珠海百岛星罗，如珠散落南海，大桥飞架，湾区明珠由此串联。"},
     {id:"zhaoqing", name:"肇庆", char:"砚", source:"端砚文房",
      parts:["石","见"], slotMode:"row",
-     landmark:"七星岩 · 鼎湖山", craft:"端砚制作技艺", food:"裹蒸粽 · 文㞧鲤",
+     landmark:"七星岩 · 鼎湖山", craft:"端砚制作技艺", food:"裹蒸粽 · 文㞧鲤", season:"春夏宜游", line:"七星岩 — 鼎湖山 — 端砚文化村",
+     imgs:{"src":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/UZlUbrvQaoXR8xxsC0Hc0ql6n7c","landmark":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/TnTEbeDvuozibzxFmADcRwQtnqb","craft":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/VEpHbrcS4odYC8xYJeXc1Ksmndf","food":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/ILQlbQQYYoZHxZxepCdca9Yun8e","season":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/Tr4TbkwXzo22Iuxr5W8cWinJnDe","line":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/BbvbbMGoeo9CDhxDcV5cwr3en7c"},
      story:"端砚为四大名砚之首，石中见文。「砚」字一石一见，磨墨晕字，七星岩摩崖石刻犹见墨香。"},
     {id:"jiangmen", name:"江门", char:"碉", source:"开平碉楼",
      parts:["石","周"], slotMode:"row",
-     landmark:"开平碉楼 · 小鸟天堂", craft:"侨乡建筑遗产", food:"陈皮宴 · 古井烧鹅",
+     landmark:"开平碉楼 · 小鸟天堂", craft:"侨乡建筑遗产", food:"陈皮宴 · 古井烧鹅", season:"春秋宜游", line:"开平碉楼群 — 立园 — 赤坎古镇",
+     imgs:{"src":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/AzXIbZ0NHoqLLXxL3YccWMcnnxf","landmark":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/V65mbCIoEop7WMxLCJLc20V5npf","craft":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/SUPZbA2PSo3Mwfxbrepc6sJvn0f","food":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/FwXwb5C7AoShQVx0TpTcl5lmnYd","season":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/BQF8buboboOwkUxvxgocy3pNn3c","line":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/VKrwbWCQgopp9Yx3JfTcA5ginma"},
      story:"「碉」从石周声，垒石成楼。开平碉楼中西合璧，一砖一石垒起侨乡记忆，守望故土百年。"},
     {id:"zhongshan", name:"中山", char:"侨", source:"侨乡故里",
      parts:["亻","乔"], slotMode:"row",
-     landmark:"孙中山故居 · 孙文西路", craft:"小榄菊花会", food:"石岐乳鸽 · 粉果",
+     landmark:"孙中山故居 · 孙文西路", craft:"小榄菊花会", food:"石岐乳鸽 · 粉果", season:"全年宜游", line:"孙中山故居 — 孙文西路 — 詹园",
+     imgs:{"src":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/V9sPbPSYkob1Bnx0LAXcar5MnqF","landmark":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/O4oZbAYmMoIVaTxipqGcBBAXnYF","craft":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/EQ6wbXuDvoL2MIxGHwWcnu0Knsc","food":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/GlFXbJHQuo4biPxAwEbcOcUBn3z","season":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/HllibZzRPosJNAx96mgczSgKnXf","line":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/OZRwbpvV0oh3f3xclntckL3OnJc"},
      story:"「侨」者，人乔其居而心系故里。中山是伟人故里、著名侨乡，一封封侨批漂洋过海，写着归乡的心。"},
     {id:"huizhou", name:"惠州", char:"湖", source:"鹅城西湖",
      parts:["氵","胡"], slotMode:"row",
-     landmark:"惠州西湖 · 罗浮山", craft:"东坡寓惠遗风", food:"梅菜扣肉 · 东江酿豆腐",
+     landmark:"惠州西湖 · 罗浮山", craft:"东坡寓惠遗风", food:"梅菜扣肉 · 东江酿豆腐", season:"春秋最宜", line:"惠州西湖 — 罗浮山 — 巽寮湾",
+     imgs:{"src":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/LnLsbwk0uo10XmxmASPcgz5Ynwf","landmark":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/TKc8bqWnuoe8uVxW1JYc2Yz7nzc","craft":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/XGLBb4IH1oNIdPxdi9UcoBATnrf","food":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/JT1xbnO2WoyHTaxu2uvcjfE9nDh","season":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/Vz6zbm0WdodEeHxGS6gc1QzKnEh","line":"https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/WTUeb5OI2o6OlJxpnRDcLELtnU8"},
      story:"惠州古称鹅城，西湖山水如画。「湖」字三水相依，东坡曾寓居于此，涟漪成字，斯文在兹。"}
+  ];
+
+  var TRAVEL_TIPS = [
+    "广州 · 早茶一盅两件，艇仔粥配肠粉，食在花城",
+    "深圳 · 从莲花山到深圳湾，山海之间的年轻之城",
+    "香港 · 天星小轮横渡维港，灯光秀里看东方之珠",
+    "澳门 · 大三巴下的碎石路，通往官也街的葡挞香",
+    "佛山 · 祖庙看醒狮，石湾窑里淘一只公仔",
+    "东莞 · 可园听雨，莞香袅袅，一碗烧鹅濑粉暖胃",
+    "珠海 · 情侣路吹海风，渔女像前看百岛星罗",
+    "肇庆 · 七星岩泛舟，一方端砚磨墨晕字",
+    "江门 · 开平碉楼守望田野，赤坎骑楼诉侨乡",
+    "中山 · 孙文西路骑楼连廊，故居院里木棉开",
+    "惠州 · 西湖泛舟忆东坡，罗浮山间云雾生"
   ];
 
   var STATE = {
@@ -678,10 +893,11 @@
       var done = isCollected(c.id);
       var cls = "city-card" + (done ? " done" : "");
       var tag = done ? "集" : (i+1);
-      html += '<button class="'+cls+'" data-id="'+c.id+'">'+
+      html += '<button class="'+cls+'" data-id="'+c.id+'" style="--i:'+i+'">'+
         '<span class="tag">'+tag+'</span>'+
         '<span class="ch">'+c.char+'</span>'+
         '<span class="nm">'+c.name+' · '+c.source+'</span>'+
+        '<span class="lm">'+c.landmark.split("·")[0].trim()+'</span>'+
         '<span class="need">'+(done?'已入帖':'点此入城')+'</span>'+
       '</button>';
     }
@@ -694,6 +910,21 @@
       });
     }
     updateProgress();
+    setTravelTip();
+  }
+  function setTravelTip(){
+    var el = document.getElementById("tt-text");
+    if(!el) return;
+    el.textContent = TRAVEL_TIPS[Math.floor(Math.random()*TRAVEL_TIPS.length)];
+  }
+  function nextTip(){
+    var el = document.getElementById("tt-text");
+    if(!el) return;
+    el.style.opacity = 0;
+    setTimeout(function(){
+      el.textContent = TRAVEL_TIPS[Math.floor(Math.random()*TRAVEL_TIPS.length)];
+      el.style.opacity = 1;
+    }, 180);
   }
   function updateProgress(){
     var n = collectedCount();
@@ -929,6 +1160,8 @@
       mask.classList.remove("show");
       if(retryLabel === "restart-all"){
         restartAll();
+      }else if(retryLabel === "quiz-retry"){
+        startQuiz();
       }else{
         startLevel(STATE.current);
       }
@@ -942,11 +1175,22 @@
     document.getElementById("d-city").textContent = c.name + " · 一城一字";
     document.getElementById("d-src").textContent = c.char + " · " + c.source;
     var grid = document.getElementById("d-grid");
-    grid.innerHTML =
-      '<div class="d-card"><div class="ic">'+sealIcon('#E28466')+'<span class="lbl">字源</span></div><div class="val">'+c.source+'</div></div>'+
-      '<div class="d-card"><div class="ic">'+sealIcon('#E28466')+'<span class="lbl">地标</span></div><div class="val">'+c.landmark+'</div></div>'+
-      '<div class="d-card"><div class="ic">'+sealIcon('#E28466')+'<span class="lbl">非遗</span></div><div class="val">'+c.craft+'</div></div>'+
-      '<div class="d-card"><div class="ic">'+sealIcon('#E28466')+'<span class="lbl">食味</span></div><div class="val">'+c.food+'</div></div>';
+    var cards = [
+      {k:"src",      lbl:"字源", v:c.source},
+      {k:"landmark", lbl:"地标", v:c.landmark},
+      {k:"craft",    lbl:"非遗", v:c.craft},
+      {k:"food",     lbl:"食味", v:c.food},
+      {k:"season",   lbl:"宜游", v:c.season},
+      {k:"line",     lbl:"线路", v:c.line}
+    ];
+    var gridHtml = "";
+    for(var g=0;g<cards.length;g++){
+      gridHtml += '<div class="d-card d-photo" data-key="'+cards[g].k+'" role="button" tabindex="0" aria-label="查看'+cards[g].lbl+'图片">'+
+        '<div class="ic">'+sealIcon('#E28466')+'<span class="lbl">'+cards[g].lbl+'</span></div>'+
+        '<div class="val">'+cards[g].v+'<span class="see">看图</span></div>'+
+      '</div>';
+    }
+    grid.innerHTML = gridHtml;
     document.getElementById("d-quote").textContent = c.story;
     go("#/detail");
   }
@@ -1181,14 +1425,6 @@
       ctx.fillText(CITIES[k].char, x, y);
     }
     ctx.globalAlpha = 1;
-    // 底部印章
-    ctx.fillStyle = "#B5462E";
-    var sealS = 40;
-    var sx = W/2 - sealS/2, sy = H - 86;
-    ctx.fillRect(sx, sy, sealS, sealS);
-    ctx.fillStyle = "#F5EEE0";
-    ctx.font = "20px "+'"'+'Ma Shan Zheng'+'","KaiTi",serif';
-    ctx.fillText("字游", W/2, sy + sealS/2 + 7);
     // 集字语
     ctx.fillStyle = "rgba(46,42,38,.7)";
     ctx.font = "11px "+'"'+'Noto Serif SC'+'",serif';
@@ -1258,6 +1494,41 @@
   function bind(){
     document.getElementById("btn-enter").addEventListener("click", function(){ go("#/city"); });
 
+    var tipEl = document.getElementById("travel-tip");
+    if(tipEl){
+      tipEl.addEventListener("click", nextTip);
+      tipEl.addEventListener("keydown", function(e){
+        if(e.key === "Enter" || e.key === " "){ e.preventDefault(); nextTip(); }
+      });
+    }
+    var quizEntry = document.getElementById("quiz-entry");
+    if(quizEntry){
+      quizEntry.addEventListener("click", startQuiz);
+      quizEntry.addEventListener("keydown", function(e){
+        if(e.key === "Enter" || e.key === " "){ e.preventDefault(); startQuiz(); }
+      });
+    }
+    document.getElementById("quiz-back").addEventListener("click", function(){ go("#/city"); });
+
+    var dGrid = document.getElementById("d-grid");
+    dGrid.addEventListener("click", function(e){
+      var card = e.target.closest ? e.target.closest(".d-photo") : null;
+      if(card) openImgModal(card);
+    });
+    dGrid.addEventListener("keydown", function(e){
+      if(e.key === "Enter" || e.key === " "){
+        var card = e.target.closest ? e.target.closest(".d-photo") : null;
+        if(card){ e.preventDefault(); openImgModal(card); }
+      }
+    });
+    document.getElementById("img-close").addEventListener("click", closeImgModal);
+    document.getElementById("img-mask").addEventListener("click", function(e){
+      if(e.target === this) closeImgModal();
+    });
+    document.addEventListener("keydown", function(e){
+      if(e.key === "Escape") closeImgModal();
+    });
+
     document.getElementById("play-back").addEventListener("click", function(){ go("#/city"); });
     document.getElementById("detail-back").addEventListener("click", function(){ go("#/city"); });
     document.getElementById("write-back").addEventListener("click", function(){ go("#/city"); });
@@ -1288,6 +1559,148 @@
     bindWrite();
   }
 
+  /* ===== 封面鼠标视差（分层浮动） ===== */
+  function initParallax(){
+    var cover = document.getElementById("view-cover");
+    if(!cover) return;
+    var bgLayer = cover.querySelector(".cover-hero");
+    var fgLayer = cover.querySelector(".cover-body");
+    if(!bgLayer || !fgLayer) return;
+    window.addEventListener("pointermove", function(e){
+      if(e.pointerType && e.pointerType !== "mouse") return;
+      var w = window.innerWidth, h = window.innerHeight;
+      var nx = (e.clientX / w * 2 - 1);   // -1 ~ 1
+      var ny = (e.clientY / h * 2 - 1);
+      bgLayer.style.transform = "translate3d(" + (nx * 10) + "px," + (ny * 7) + "px,0)";
+      fgLayer.style.transform = "translate3d(" + (-nx * 6) + "px," + (-ny * 4) + "px,0)";
+    });
+  }
+
+  function openImgModal(card){
+    var c = getCity(STATE.current);
+    var key = card.getAttribute("data-key");
+    var url = c.imgs ? c.imgs[key] : null;
+    if(!url){ toast("图片整理中，先看文字解字"); return; }
+    var labels = {src:"字源", landmark:"地标", craft:"非遗", food:"食味", season:"宜游", line:"线路"};
+    var vals = {src:c.source, landmark:c.landmark, craft:c.craft, food:c.food, season:c.season, line:c.line};
+    document.getElementById("img-photo").src = url;
+    document.getElementById("img-lbl").textContent = labels[key];
+    document.getElementById("img-city").textContent = c.name + " · " + c.char;
+    document.getElementById("img-desc").textContent = c.name + " · " + vals[key];
+    document.getElementById("img-mask").classList.add("show");
+  }
+  function closeImgModal(){
+    document.getElementById("img-mask").classList.remove("show");
+  }
+
+  /* ===== 湾区问答 · 猜城 ===== */
+  var quiz = {list:[], idx:0, score:0, answered:false};
+  function maskCity(c, text){
+    return text.split(c.name).join("");
+  }
+  function quizRank(n){
+    if(n>=7) return "湾区文旅通";
+    if(n>=5) return "湾区旅人";
+    if(n>=3) return "湾区初探";
+    return "湾区待启程";
+  }
+  function buildQuiz(){
+    var ids = shuffle(CITIES.slice()).slice(0, 8);
+    quiz.list = ids.map(function(c){
+      var pool = [
+        {k:"地标", v:maskCity(c, c.landmark)},
+        {k:"非遗", v:maskCity(c, c.craft)},
+        {k:"食味", v:c.food},
+        {k:"宜游", v:c.season}
+      ];
+      var picks = shuffle([0,1,2,3]).slice(0,3);
+      var clues = [];
+      for(var i=0;i<picks.length;i++) clues.push(pool[picks[i]]);
+      return {city:c, clues:clues};
+    });
+    quiz.idx = 0; quiz.score = 0; quiz.answered = false;
+  }
+  function renderQuiz(){
+    var q = quiz.list[quiz.idx];
+    document.getElementById("q-label").textContent = (quiz.idx+1)+" / "+quiz.list.length;
+    document.getElementById("q-fill").style.width = Math.round(quiz.idx/quiz.list.length*100)+"%";
+    var clueHtml = "";
+    for(var i=0;i<q.clues.length;i++){
+      clueHtml += '<div class="qc-item"><span class="qc-lbl">'+q.clues[i].k+'</span><span class="qc-val">'+q.clues[i].v+'</span></div>';
+    }
+    document.getElementById("quiz-clue").innerHTML = '<div class="qc-head">此城何在</div>'+clueHtml;
+    var wrongs = shuffle(CITIES.filter(function(c){return c.id!==q.city.id;})).slice(0,3);
+    var opts = shuffle([q.city].concat(wrongs));
+    var optHtml = "";
+    for(var j=0;j<opts.length;j++){
+      optHtml += '<button class="qo" data-id="'+opts[j].id+'"><span class="qo-ch">'+opts[j].char+'</span><span class="qo-nm">'+opts[j].name+'</span></button>';
+    }
+    document.getElementById("quiz-opts").innerHTML = optHtml;
+    document.getElementById("quiz-feedback").textContent = "";
+    quiz.answered = false;
+    bindQuizOptions();
+  }
+  function bindQuizOptions(){
+    var btns = document.querySelectorAll("#quiz-opts .qo");
+    for(var i=0;i<btns.length;i++){
+      btns[i].addEventListener("click", function(){
+        if(quiz.answered) return;
+        quiz.answered = true;
+        var picked = this.dataset.id;
+        var q = quiz.list[quiz.idx];
+        var fb = document.getElementById("quiz-feedback");
+        var all = document.querySelectorAll("#quiz-opts .qo");
+        for(var k=0;k<all.length;k++) all[k].disabled = true;
+        if(picked === q.city.id){
+          quiz.score++;
+          this.classList.add("correct");
+          fb.textContent = "答对了 · 此城正是「"+q.city.name+"」";
+        }else{
+          this.classList.add("wrong");
+          for(var m=0;m<all.length;m++){
+            if(all[m].dataset.id === q.city.id) all[m].classList.add("correct");
+          }
+          fb.textContent = "答错了 · 此城应是「"+q.city.name+"」";
+        }
+        setTimeout(function(){
+          quiz.idx++;
+          if(quiz.idx >= quiz.list.length){
+            finishQuiz();
+          }else{
+            renderQuiz();
+          }
+        }, 1200);
+      });
+    }
+  }
+  function finishQuiz(){
+    var n = quiz.score, total = quiz.list.length;
+    openPanel("问", "问答毕", "湾区文旅评级 · "+quizRank(n), n+" / "+total, function(){ go("#/city"); }, "quiz-retry");
+  }
+  function startQuiz(){
+    buildQuiz();
+    renderQuiz();
+    go("#/quiz");
+  }
+
+  /* ===== 封面墨点漂浮 ===== */
+  function spawnInkDots(){
+    var cover = document.getElementById("view-cover");
+    if(!cover || cover.querySelector(".ink-dot")) return;
+    for(var i=0;i<7;i++){
+      var d = document.createElement("div");
+      d.className = "ink-dot";
+      var size = 40 + Math.random()*90;
+      d.style.width = size+"px";
+      d.style.height = size+"px";
+      d.style.left = (6 + Math.random()*88)+"%";
+      d.style.top = (55 + Math.random()*38)+"%";
+      d.style.animationDuration = (7 + Math.random()*9)+"s";
+      d.style.animationDelay = (Math.random()*6)+"s";
+      cover.appendChild(d);
+    }
+  }
+
   window.addEventListener("hashchange", function(){
     var h = currentHash();
     var base = h.split("/")[0];
@@ -1297,6 +1710,7 @@
     if(base === "play"){ show("play"); }
     else if(base === "detail"){ show("detail"); }
     else if(base === "write"){ show("write"); }
+    else if(base === "quiz"){ show("quiz"); }
     else if(base === "album"){ renderAlbum(); show("album"); }
     else if(base === "city"){ renderCity(); show("city"); }
     else { renderCover(); show("cover"); }
@@ -1304,12 +1718,31 @@
 
   /* ===== 启动 ===== */
   renderCover();
+  spawnInkDots();
+  initParallax();
   var h = currentHash();
   var base = h.split("/")[0];
   if(base === "city"){ renderCity(); show("city"); }
+  else if(base === "quiz"){ show("quiz"); }
   else if(base === "album"){ renderAlbum(); show("album"); }
   else { show("cover"); }
   bind();
+})();
+
+/* ===== 隐藏发布平台注入的右下角品牌水印 ===== */
+(function(){
+  function hide(){
+    var els = document.querySelectorAll('div[data-custom-element="doubao-watermark"]');
+    for(var i=0;i<els.length;i++){
+      if(els[i].parentNode) els[i].parentNode.removeChild(els[i]);
+    }
+  }
+  hide();
+  var waits = [300, 900, 2000, 4000, 8000];
+  for(var w=0;w<waits.length;w++) setTimeout(hide, waits[w]);
+  if(window.MutationObserver){
+    new MutationObserver(hide).observe(document.body, {childList:true, subtree:false});
+  }
 })();
 </script>
 </body>
